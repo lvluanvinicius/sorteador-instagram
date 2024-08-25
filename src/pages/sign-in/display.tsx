@@ -1,21 +1,18 @@
-import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { Form } from "./form";
+import { useSession } from "next-auth/react";
 
 export function Display() {
-  const { status, data } = useSession();
+  const router = useRouter();
+  const { status } = useSession();
 
-  async function handleSignIn() {
-    await signIn("instagram");
+  if (status === "authenticated") {
+    return router.push("/account");
   }
 
   return (
-    <div>
-      Efetuar Login com Instagram:
-      <br />
-      <button onClick={handleSignIn}>Entrar</button>
-      <br />
-      <br />
-      <div>Status: {status}</div>
-      <div>Dados: {JSON.stringify(data)}</div>
+    <div className="h-screen ">
+      <Form />
     </div>
   );
 }
