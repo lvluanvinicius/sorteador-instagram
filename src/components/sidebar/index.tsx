@@ -29,7 +29,7 @@ export function Sidebar() {
               <Link
                 key={lk.name}
                 href={lk.link}
-                className="dark:hover:bg-gray-500"
+                className="dark:hover:bg-gray-500 p-2 rounded-md"
               >
                 <li className="">{lk.name}</li>
               </Link>

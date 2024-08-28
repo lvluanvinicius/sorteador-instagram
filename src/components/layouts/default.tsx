@@ -9,7 +9,7 @@ export function Default({ children }: DefaultProps) {
   return (
     <div className="flex h-screen">
       <Sidebar />
-      {children}
+      <main className="p-2">{children}</main>
     </div>
   );
 }
