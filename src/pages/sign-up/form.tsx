@@ -1,3 +1,4 @@
+import { post } from "@/services/app";
 import { Card, CardHeader, CardBody, Button, Input } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -29,12 +30,13 @@ export function Form() {
     password,
     username,
   }: SignUpType) {
-    console.log({
+    const response = await post("/api/sign-up", {
       email,
-      name,
-      password,
       username,
+      password,
+      name,
     });
+    console.log(response);
   },
   []);
 
