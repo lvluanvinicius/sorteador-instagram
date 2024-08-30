@@ -1,4 +1,5 @@
 import { env } from "@/env";
+import { AuthCredentialsProvider } from "@/providers/credentials";
 import { NextApiRequest, NextApiResponse } from "next";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import InstagramProvider from "next-auth/providers/instagram";
@@ -32,23 +33,21 @@ export function buildNextAuthOptions(): NextAuthOptions {
           token_endpoint_auth_method: "client_secret_post",
         },
       }),
+      AuthCredentialsProvider(),
     ],
+    pages: {
+      signIn: "/sign-in",
+      error: "/sign-in/error",
+    },
     callbacks: {
       // Callback JWT para incluir o access_token
       async jwt(sess) {
-        console.log(sess.account);
-        console.log(sess.user);
-        console.log(sess.token);
-
         return sess;
       },
       // Callback de sessão para incluir o access_token na sessão
       async session({ session, token }: { session: any; token: any }) {
-        console.log(session, token);
-
         // Adiciona o access_token à sessão
         session.accessToken = token.accessToken;
-        console.log(session);
 
         return session;
       },
