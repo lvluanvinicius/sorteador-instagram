@@ -56,6 +56,21 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  Raffles       Raffles[]
 
   @@map("users")
+}
+
+model Raffles {
+  id           String @id @default(cuid())
+  type         String
+  sorted_value String
+
+  user_id String
+
+  sort_date DateTime
+
+  User User @relation(fields: [user_id], references: [id])
+
+  @@map("raffles")
 }
