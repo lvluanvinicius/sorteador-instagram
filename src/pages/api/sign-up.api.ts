@@ -1,6 +1,6 @@
 import { hashMake } from "@/utils/hash";
 import { NextApiRequest, NextApiResponse } from "next";
-import { errorInvalidContentBody } from "../exceptions/invalid_content_body";
+import { errorInvalidContentBody } from "../../exceptions/invalid_content_body";
 import { prisma } from "@/lib/prisma";
 
 interface DataRequest {
@@ -41,6 +41,35 @@ export default async function handle(
       "email|E-mail não foi informado corretamente.",
     ]);
 
+    // Recuperando usuário se existir.
+    const findUnique = await prisma.user.findFirst({
+      where: {
+        OR: [
+          {
+            email,
+          },
+          {
+            username,
+          },
+        ],
+      },
+    });
+
+    // Validando dados unicos.
+    if (findUnique) {
+      if (findUnique.email === email) {
+        throw new Error("E-mail já está sendo utilizado.", {
+          cause: "DATA_DUPLICATED",
+        });
+      }
+
+      if (findUnique.username === username) {
+        throw new Error("Usuário já está sendo utilizado.", {
+          cause: "DATA_DUPLICATED",
+        });
+      }
+    }
+
     // Convertendo password para bcrypt.
     const hashPassword = await hashMake(req.body.password);
 
@@ -61,18 +90,24 @@ export default async function handle(
     });
   } catch (error) {
     if (error instanceof Error) {
-      if (error.cause === "METHOD_NOT_ALLOWED") {
-        return res.status(405).json({
-          status: false,
-          message: error.message,
-        });
-      }
+      switch (error.cause) {
+        case "METHOD_NOT_ALLOWED":
+          return res.status(405).json({
+            status: false,
+            message: error.message,
+          });
 
-      if (error.cause === "INVALID_CONTENT_BODY") {
-        return res.status(200).json({
-          status: false,
-          message: error.message,
-        });
+        case "INVALID_CONTENT_BODY":
+          return res.status(200).json({
+            status: false,
+            message: error.message,
+          });
+
+        case "DATA_DUPLICATED":
+          return res.status(400).json({
+            status: false,
+            message: error.message,
+          });
       }
 
       return res.status(400).json({
@@ -85,5 +120,7 @@ export default async function handle(
       status: false,
       message: "Houve um erro desconhecido.",
     });
+  } finally {
+    await prisma.$disconnect();
   }
 }

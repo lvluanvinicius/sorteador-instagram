@@ -1,8 +1,6 @@
-import { getCsrfToken } from "next-auth/react";
-import { GetServerSideProps } from "next";
 import { Form } from "./form";
 
-export default function handler({ csrfToken }: { csrfToken: string }) {
+export default function handler() {
   return (
     <div className="h-screen">
       <Form />

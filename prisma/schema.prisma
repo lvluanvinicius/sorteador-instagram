@@ -34,11 +34,14 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique @map("session_token")
-  userId       String   @map("user_id")
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String  @id @default(cuid())
+  sessionToken String  @unique @map("session_token")
+  userId       String? @map("user_id")
+  access_token String? @db.Text
+  remote_ip    String? @db.Text
+  user_agent   String? @db.Text
+  expires      Int
+  User         User?   @relation(fields: [userId], references: [id])
 
   @@map("sessions")
 }
@@ -48,20 +51,11 @@ model User {
   name          String?
   email         String?   @unique
   password      String
-  username      String
+  username      String    @unique
   emailVerified DateTime? @map("email_verified")
   image         String?
   accounts      Account[]
   sessions      Session[]
 
   @@map("users")
-}
-
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
-
-  @@unique([identifier, token])
-  @@map("verificationtokens")
 }

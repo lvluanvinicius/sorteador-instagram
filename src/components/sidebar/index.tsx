@@ -1,12 +1,8 @@
 import { Card, CardHeader } from "@chakra-ui/react";
 import { Funnel, UserCircleGear } from "@phosphor-icons/react";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 export function Sidebar() {
-  const { data: authData } = useSession();
-  console.log(authData);
-
   const links = [
     {
       name: "Sorteador",

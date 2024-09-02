@@ -1,10 +1,10 @@
 import { RaffleMakerLayout } from "@/components/layouts/raffle-maker";
-import { Selector } from "./selector";
+import { Page } from "./page";
 
 export default function handler() {
   return (
     <RaffleMakerLayout>
-      <Selector />
+      <Page />
     </RaffleMakerLayout>
   );
 }

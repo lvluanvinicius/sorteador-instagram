@@ -9,7 +9,30 @@ interface FetchOptions {
   headers?: Record<string, string>;
   body?: any; // Pode ser um objeto ou string dependendo do conteúdo enviado
   queryParams?: Record<string, string | number>;
-  responseType?: "json" | "text";
+}
+
+// Interface padrão para o retorno da API
+declare interface PrismaActionResponse<T> {
+  message: string;
+  status: boolean;
+  data: T;
+}
+
+// Classe para erros de fetch
+class FetchError extends Error {
+  type: "NetworkError" | "HTTPError" | "APIError" | "GeneralError";
+  status?: number;
+
+  constructor(
+    message: string,
+    type: "NetworkError" | "HTTPError" | "APIError" | "GeneralError",
+    status?: number
+  ) {
+    super(message);
+    this.name = "FetchError";
+    this.type = type;
+    this.status = status;
+  }
 }
 
 // Função para criar URLs com parâmetros de consulta
@@ -27,13 +50,12 @@ function createURLWithQueryParams(
 async function customFetch<T = any>(
   url: string,
   options: FetchOptions = {}
-): Promise<T> {
+): Promise<PrismaActionResponse<T>> {
   const {
     method = "GET",
     headers = {},
     body = null,
     queryParams = {},
-    responseType = "json",
     ...rest
   } = options;
 
@@ -59,17 +81,35 @@ async function customFetch<T = any>(
   try {
     const response = await fetch(fullUrl, fetchOptions);
 
-    if (!response.ok) {
-      throw new Error(`Erro na requisição: ${response.statusText}`);
+    // Espera que a API sempre retorne JSON com status, message, e data
+    const apiResponse: PrismaActionResponse<T> = await response.json();
+
+    // Lança um erro se o status da API for false
+    if (!apiResponse.status) {
+      throw new FetchError(apiResponse.message, "APIError", response.status);
     }
 
-    // Retorna a resposta baseada no tipo especificado (json, text, etc.)
-    return responseType === "json"
-      ? await response.json()
-      : ((await response.text()) as T);
+    return apiResponse;
   } catch (error) {
-    console.error("Erro no fetch:", error);
-    throw error;
+    if (error instanceof FetchError) {
+      // Se o erro já for um FetchError, lança novamente
+      throw error;
+    } else if (error instanceof TypeError) {
+      // Erros de rede (NetworkError)
+      throw new FetchError(
+        "Erro de rede ou requisição abortada",
+        "NetworkError"
+      );
+    } else if (error instanceof SyntaxError) {
+      // Erros de parsing JSON (geralmente inesperados)
+      throw new FetchError(
+        "Erro ao processar a resposta da API",
+        "GeneralError"
+      );
+    } else {
+      // Outros erros genéricos
+      throw new FetchError("Erro desconhecido", "GeneralError");
+    }
   }
 }
 
@@ -77,7 +117,7 @@ async function customFetch<T = any>(
 async function get<T = any>(
   url: string,
   options: Omit<FetchOptions, "method"> = {}
-): Promise<T> {
+): Promise<PrismaActionResponse<T>> {
   return customFetch<T>(url, { ...options, method: "GET" });
 }
 
@@ -85,7 +125,7 @@ async function post<T = any>(
   url: string,
   body: any,
   options: Omit<FetchOptions, "method" | "body"> = {}
-): Promise<T> {
+): Promise<PrismaActionResponse<T>> {
   return customFetch<T>(url, { ...options, method: "POST", body });
 }
 
@@ -93,16 +133,16 @@ async function put<T = any>(
   url: string,
   body: any,
   options: Omit<FetchOptions, "method" | "body"> = {}
-): Promise<T> {
+): Promise<PrismaActionResponse<T>> {
   return customFetch<T>(url, { ...options, method: "PUT", body });
 }
 
 async function del<T = any>(
   url: string,
   options: Omit<FetchOptions, "method"> = {}
-): Promise<T> {
+): Promise<PrismaActionResponse<T>> {
   return customFetch<T>(url, { ...options, method: "DELETE" });
 }
 
 // Exporta as funções
-export { customFetch, get, post, put, del };
+export { customFetch, get, post, put, del, FetchError };

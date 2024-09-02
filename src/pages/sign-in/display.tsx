@@ -1,18 +1,9 @@
-import { useRouter } from "next/router";
-import { Form } from "./form";
-import { useSession } from "next-auth/react";
+import { Form } from "./form"; // Certifique-se de que o caminho para o componente está correto
 
-export function Display({ csrfToken }: { csrfToken: string }) {
-  const router = useRouter();
-  const { status } = useSession();
-
-  // if (status === "authenticated") {
-  //   return router.push("/account");
-  // }
-
+export function Display() {
   return (
     <div className="h-screen">
-      <Form csrfToken={csrfToken} />
+      <Form />
     </div>
   );
 }

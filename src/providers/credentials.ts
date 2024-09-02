@@ -13,27 +13,22 @@ type AuthorizeReturn = AdapterUser | null;
 export function AuthCredentialsProvider(): CredentialsConfig {
   return {
     id: "app-sort-instagram",
-    // The name to display on the sign in form (e.g. "Sign in with...")
     name: "App Sort",
-    // `credentials` is used to generate a form on the sign in page.
-    // You can specify which fields should be submitted, by adding keys to the `credentials` object.
-    // e.g. domain, username, password, 2FA token, etc.
-    // You can pass any HTML attribute to the <input> tag through the object.
     credentials: {
-      username: { label: "Username", type: "text", placeholder: "jsmith" },
+      username: { label: "Username", type: "text" },
       password: { label: "Password", type: "password" },
     },
     type: "credentials",
-
     async authorize(
       credentials: Record<keyof CredentialsData, string> | undefined,
       req
     ): Promise<AuthorizeReturn> {
       if (!credentials) {
-        throw new Error("Informe os dados corretamente.");
+        // Retorna null se as credenciais não forem fornecidas
+        return null;
       }
 
-      const { password, username } = credentials;
+      const { username, password } = credentials;
 
       // Busca o usuário no banco de dados pelo username fornecido
       const user = await prisma.user.findFirst({
@@ -43,25 +38,26 @@ export function AuthCredentialsProvider(): CredentialsConfig {
       });
 
       if (!user) {
-        // Se o usuário não for encontrado, retorna null para exibir um erro
-        throw new Error("Usuário e/ou senha estão incorretos.");
+        // Se o usuário não for encontrado, retorna null para exibir um erro de autenticação
+        return null;
       }
 
       // Verifica se a senha fornecida corresponde ao hash armazenado no banco de dados
       const isPasswordValid = await validatePassword(password, user.password);
 
       if (!isPasswordValid) {
-        throw new Error("Usuário e/ou senha estão incorretos.");
+        // Retorna null se a senha estiver incorreta
+        return null;
       }
 
-      // Se o usuário é encontrado e a senha é válida, retorna o objeto do usuário
+      // Retorna um objeto que é compatível com o AdapterUser
       return {
         id: user.id,
         name: user.name,
-        username: user.username,
         email: user.email || "",
         emailVerified: null,
-      };
+        username: user.username,
+      } as AdapterUser;
     },
   };
 }

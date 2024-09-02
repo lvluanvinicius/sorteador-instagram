@@ -7,6 +7,7 @@ const envSchema = z.object({
   NEXTAUTH_SECRET: z.string(),
   AUTH_SECRET: z.string(),
   APP_URL: z.string().url(),
+  TIMEZONE: z.string(),
 });
 
 export const env = envSchema.parse(process.env);
