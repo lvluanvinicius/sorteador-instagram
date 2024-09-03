@@ -17,7 +17,8 @@ interface SessionContextProps {
     username: string,
     password: string
   ) => Promise<PrismaActionResponse<[]>>;
-  checkSession: () => Promise<boolean | undefined>;
+  isLogged: () => Promise<boolean | undefined>;
+  notLogged: () => Promise<boolean | undefined>;
 }
 
 export const SessionContext = createContext({} as SessionContextProps);
@@ -38,6 +39,7 @@ export function SessionProvider({ children }: SessionProvider) {
 
     if (window !== undefined) {
       if (responseJson && responseJson.session_token) {
+        nookies.destroy(null, "_sort_app.webtoken");
         nookies.set(null, "_sort_app.webtoken", responseJson.session_token, {
           maxAge: 60 * 60 * 60,
         });
@@ -52,11 +54,12 @@ export function SessionProvider({ children }: SessionProvider) {
         Accept: "application/json",
       },
     });
-    const data = (await response.json()) as PrismaActionResponse<null>;
+
+    const data = (await response.json()) as PrismaActionResponse<UserInterface>;
 
     if (data.data) {
       setUser(data.data);
-      setIsAuthenticated(!!data.data);
+      setIsAuthenticated(true);
       return;
     }
 
@@ -73,9 +76,18 @@ export function SessionProvider({ children }: SessionProvider) {
   }, []);
 
   // Encaminha o usuário para a conta se já estiver logado.
-  const checkSession = useCallback(async () => {
+  const isLogged = useCallback(async () => {
     if (isAuthenticated) {
       return router.replace("/account");
+    }
+  }, [router, isAuthenticated]);
+
+  // Valida se o usuário não está logado.
+  const notLogged = useCallback(async () => {
+    if (!isAuthenticated) {
+      console.log(isAuthenticated, !isAuthenticated, user);
+
+      return router.replace("/sign-in");
     }
   }, [router, isAuthenticated]);
 
@@ -87,9 +99,17 @@ export function SessionProvider({ children }: SessionProvider) {
     userLoading();
   }, [userLoading]);
 
+  useEffect(() => {
+    if (user) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, [user]);
+
   return (
     <SessionContext.Provider
-      value={{ isAuthenticated, user, signIn, checkSession }}
+      value={{ isAuthenticated, user, signIn, isLogged, notLogged }}
     >
       {children}
     </SessionContext.Provider>

@@ -17,7 +17,7 @@ type SignInType = z.infer<typeof signInSchema>;
 
 export function Form() {
   const router = useRouter();
-  const { signIn, checkSession } = useSession();
+  const { signIn, isAuthenticated } = useSession();
 
   const {
     handleSubmit,
@@ -47,8 +47,12 @@ export function Form() {
   };
 
   useEffect(() => {
-    checkSession();
-  }, [checkSession]);
+    async () => {
+      if (isAuthenticated) {
+        return router.replace("/account");
+      }
+    };
+  }, [isAuthenticated]);
 
   return (
     <Card className="w-[350px] h-[300px] translate-x-[-50%] translate-y-[-50%] absolute top-[50%] left-[50%]">
