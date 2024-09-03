@@ -13,27 +13,6 @@ export function Form() {
   const [timerOpen, setTimerOpen] = useState(false);
   const [timerValue, setTimerValue] = useState<number>(5);
 
-  const saveResult = useCallback(async () => {
-    // Enviando resultado do sorteio para ser salvo.
-    const response = await post(
-      "/api/raffles-save",
-      {
-        type: "simple",
-        sorted_value: keysSelected,
-      },
-      {
-        headers: {
-          Accept: "application/json",
-        },
-      }
-    );
-
-    // Valida se foi salvo corretamente.
-    if (!response.status) {
-      setErrorMessage(response.message);
-    }
-  }, [keysSelected, setErrorMessage]);
-
   const handleSort = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -63,7 +42,25 @@ export function Form() {
       }
 
       setKeysKeySelected(keySelected);
-      await saveResult();
+
+      // Enviando resultado do sorteio para ser salvo.
+      const response = await post(
+        "/api/raffles/save",
+        {
+          type: "simple",
+          sorted_value: keySelected,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        }
+      );
+
+      // Valida se foi salvo corretamente.
+      if (!response.status) {
+        setErrorMessage(response.message);
+      }
     },
     [keys, setKeysKeySelected, setErrorMessage]
   );
