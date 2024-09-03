@@ -17,6 +17,13 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
+    // Validando metodo.
+    if (req.method !== "GET") {
+      throw new Error("Method is not allowed.", {
+        cause: "METHOD_NOT_ALLOWED",
+      });
+    }
+
     const { cookies, headers } = req;
 
     const data = {} as DataSession;

@@ -20,6 +20,13 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
+    // Validando metodo.
+    if (req.method !== "POST") {
+      throw new Error("Method is not allowed.", {
+        cause: "METHOD_NOT_ALLOWED",
+      });
+    }
+
     // Recuperando dados.
     const { password, username } = req.body;
 

@@ -2,14 +2,37 @@ import { InputValues } from "@/components/raffle-maker/input-values";
 import { removeDuplicated, sortKeys } from "@/utils/tools";
 import { Button, Card, CardBody } from "@chakra-ui/react";
 import { Funnel } from "@phosphor-icons/react";
-import { FormEvent, useCallback, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { Timer } from "../timer";
+import { post } from "@/services/app";
 
 export function Form() {
   const [keys, setKeys] = useState("");
   const [keysSelected, setKeysKeySelected] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [timerOpen, setTimerOpen] = useState(false);
+  const [timerValue, setTimerValue] = useState<number>(5);
+
+  const saveResult = useCallback(async () => {
+    // Enviando resultado do sorteio para ser salvo.
+    const response = await post(
+      "/api/raffles-save",
+      {
+        type: "simple",
+        sorted_value: keysSelected,
+      },
+      {
+        headers: {
+          Accept: "application/json",
+        },
+      }
+    );
+
+    // Valida se foi salvo corretamente.
+    if (!response.status) {
+      setErrorMessage(response.message);
+    }
+  }, [keysSelected, setErrorMessage]);
 
   const handleSort = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
@@ -40,15 +63,19 @@ export function Form() {
       }
 
       setKeysKeySelected(keySelected);
-
-      // Salvar sorteio em banco.
+      await saveResult();
     },
     [keys, setKeysKeySelected, setErrorMessage]
   );
 
   return (
     <>
-      <Timer open={timerOpen} setOpen={setTimerOpen} />
+      <Timer
+        open={timerOpen}
+        setOpen={setTimerOpen}
+        timerValue={timerValue}
+        setTimerValue={setTimerValue}
+      />
       <div className="flex flex-col gap-4">
         <form
           className="flex items-center justify-center flex-col gap-4"

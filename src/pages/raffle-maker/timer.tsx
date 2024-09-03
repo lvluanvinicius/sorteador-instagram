@@ -1,35 +1,36 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 
 export function Timer({
   open,
   setOpen,
+  setTimerValue,
+  timerValue,
 }: {
   open: boolean;
+  timerValue: number;
   setOpen: (value: boolean) => void;
+  setTimerValue: (value: number) => void;
 }) {
-  const [timerValue, setTimerValue] = useState(5);
-
   const alterTimer = useCallback(() => {
     const intervalId = setInterval(() => {
-      setTimerValue((prevValue) => {
-        if (prevValue <= 1) {
-          clearInterval(intervalId); // Parar o intervalo quando o timer chega a 0 ou menos
-          setOpen(false); // Fechar o timer quando o contador chegar a 0
-          return 0;
-        }
+      // Use o valor atual de `timerValue` diretamente
+      if (timerValue > 1) {
+        setTimerValue(timerValue - 1); // Decrementa o valor de timerValue
+      } else {
+        clearInterval(intervalId); // Limpa o intervalo quando o timer chega a 0
+        setOpen(false); // Fecha o timer
+        setTimerValue(0); // Define o valor final para 0
+      }
+    }, 1000); // Executa a cada 1000ms (1 segundo)
 
-        return prevValue - 1;
-      });
-    }, 1000); // A cada 1000ms (1 segundo)
-
-    return intervalId; // Retornar o ID do intervalo para que possamos limpá-lo
-  }, [setOpen]);
+    return intervalId; // Retorna o ID do intervalo para que possamos limpá-lo
+  }, [timerValue, setTimerValue, setOpen]); // Inclua `timerValue` e `setTimerValue` nas dependências
 
   useEffect(() => {
     if (open) {
       const intervalId = alterTimer();
 
-      // Limpar o intervalo quando o componente for desmontado ou quando o `open` mudar para false
+      // Limpa o intervalo quando o componente for desmontado ou quando `open` mudar para false
       return () => {
         clearInterval(intervalId);
       };

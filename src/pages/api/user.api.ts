@@ -4,6 +4,13 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
+    // Validando metodo.
+    if (req.method !== "GET") {
+      throw new Error("Method is not allowed.", {
+        cause: "METHOD_NOT_ALLOWED",
+      });
+    }
+
     // Recuperando o token nos cookies.
     const { access_token } = req;
 
