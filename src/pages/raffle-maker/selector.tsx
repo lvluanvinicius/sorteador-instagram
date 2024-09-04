@@ -3,7 +3,6 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Input,
   Text,
   useTheme,
 } from "@chakra-ui/react";

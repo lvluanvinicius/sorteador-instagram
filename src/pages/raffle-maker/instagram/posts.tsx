@@ -1,13 +1,29 @@
-import { Button } from "@chakra-ui/react";
-import { useSession, signIn } from "next-auth/react";
+import { getPosts } from "@/services/instagram/posts";
+import { useQuery } from "@tanstack/react-query";
+import { Account } from "next-auth";
+import { CardPost } from "./components/card-post";
 
-export function Posts() {
-  const { status } = useSession();
-  console.log(status);
+interface InstagramPage {
+  account: Account;
+}
+
+export function Posts({ account }: InstagramPage) {
+  console.log(account.access_token);
+
+  const { data: posts } = useQuery({
+    queryKey: ["instagram_posts"],
+    queryFn: () => getPosts({ access_token: account.access_token as string }),
+  });
+
+  if (!posts) {
+    return null;
+  }
 
   return (
-    <div>
-      <Button onClick={() => signIn("instagram")}>Entrar</Button>
+    <div className="grid md:grid-cols-5 xl:col-span-5 gap-4">
+      {posts.data.map((post) => {
+        return <CardPost post={post} />;
+      })}
     </div>
   );
 }

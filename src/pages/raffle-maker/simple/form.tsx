@@ -2,7 +2,7 @@ import { InputValues } from "@/components/raffle-maker/input-values";
 import { removeDuplicated, sortKeys } from "@/utils/tools";
 import { Button, Card, CardBody } from "@chakra-ui/react";
 import { Funnel } from "@phosphor-icons/react";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useState } from "react";
 import { Timer } from "../timer";
 import { post } from "@/services/app";
 

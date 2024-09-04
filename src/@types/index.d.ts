@@ -19,3 +19,13 @@ declare interface PrismaActionResponse<T> {
   status: boolean;
   data: T;
 }
+
+declare interface InstagramReturnApi<T> {
+  data: T;
+  paging: {
+    cursors: {
+      before: string;
+      after: string;
+    };
+  };
+}

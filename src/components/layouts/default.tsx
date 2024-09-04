@@ -7,9 +7,9 @@ interface DefaultProps {
 
 export function Default({ children }: DefaultProps) {
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen w-screen">
       <Sidebar />
-      <main className="p-2">{children}</main>
+      <main className="py-3 px-2 w-full">{children}</main>
     </div>
   );
 }

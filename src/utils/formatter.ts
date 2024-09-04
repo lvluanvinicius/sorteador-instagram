@@ -1,5 +1,3 @@
-import { env } from "@/env";
-
 export function decodeErrorMessage(message: string) {
   try {
     // Tenta decodificar como UTF-8 usando TextDecoder, que é mais robusto para diferentes encodings
@@ -50,7 +48,7 @@ export function getCurrentTimeInZone(
 
   // Obter a data ajustada para o fuso horário "America/Sao_Paulo" diretamente
   const saoPauloDate = new Date(
-    date.toLocaleString("en-US", { timeZone: env.TIMEZONE })
+    date.toLocaleString("en-US", { timeZone: process.env.TIMEZONE })
   );
 
   switch (returnType) {
@@ -60,7 +58,7 @@ export function getCurrentTimeInZone(
     case "string":
       // Formata e retorna a data como string no fuso horário setado em env.TIMEZONE
       return saoPauloDate.toLocaleString("pt-BR", {
-        timeZone: env.TIMEZONE,
+        timeZone: process.env.TIMEZONE,
         year: "numeric",
         month: "2-digit",
         day: "2-digit",

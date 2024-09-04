@@ -9,7 +9,21 @@ export function apiHandlerErros(error: Error, res: NextApiResponse) {
         data: null,
       });
 
+    case "INVALID_CONTENT_QUERY":
+      return res.status(200).json({
+        status: false,
+        message: error.message,
+        data: null,
+      });
+
     case "INVALID_CONTENT_BODY":
+      return res.status(200).json({
+        status: false,
+        message: error.message,
+        data: null,
+      });
+
+    case "ERROR_FETCH_RETURN":
       return res.status(200).json({
         status: false,
         message: error.message,

@@ -1,6 +1,7 @@
 import { parseCookies } from "nookies";
 import { IncomingMessage } from "http";
 import { NextApiRequest } from "next";
+import { NextRequest } from "next/server";
 
 /**
  * Recupera o valor de um cookie específico pelo nome.
@@ -28,7 +29,7 @@ export function getCookieValue(
  * @returns O valor do cookie se encontrado, ou `undefined` se não encontrado.
  */
 export function getCookieValueFromRequest(
-  req: NextApiRequest,
+  req: NextApiRequest | IncomingMessage,
   cookieName: string
 ): string | undefined {
   // Usa parseCookies para obter todos os cookies do objeto de requisição

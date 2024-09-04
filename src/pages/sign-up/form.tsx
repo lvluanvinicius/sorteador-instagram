@@ -1,4 +1,3 @@
-import { useSession } from "@/contexts/session";
 import { post } from "@/services/app";
 import { Card, CardHeader, CardBody, Button, Input } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,7 +19,6 @@ type SignUpType = z.infer<typeof signUpSchema>;
 
 export function Form() {
   const router = useRouter();
-  const { checkSession } = useSession();
 
   const {
     handleSubmit,
@@ -55,10 +53,6 @@ export function Form() {
     },
     [router]
   );
-
-  useEffect(() => {
-    checkSession();
-  }, [checkSession]);
 
   return (
     <Card className="w-[390px] h-[400px]  translate-x-[-50%] translate-y-[-50%] absolute top-[50%] left-[50%]">

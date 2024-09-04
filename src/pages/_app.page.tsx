@@ -1,10 +1,12 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import { AppProps } from "next/app";
-
-import "../styles/globals.css";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 import { SessionProvider } from "@/contexts/session";
 import customTheme from "@/styles/themes";
+import { queryClient } from "@/services/queryClient";
+
+import "../styles/globals.css";
 
 export default function App({
   pageProps: { session, ...pageProps },
@@ -13,9 +15,11 @@ export default function App({
   return (
     <ChakraProvider theme={customTheme}>
       <Toaster richColors closeButton />
-      <SessionProvider>
-        <Component {...pageProps} />
-      </SessionProvider>
+      <QueryClientProvider client={queryClient}>
+        <SessionProvider>
+          <Component {...pageProps} />
+        </SessionProvider>
+      </QueryClientProvider>
     </ChakraProvider>
   );
 }
