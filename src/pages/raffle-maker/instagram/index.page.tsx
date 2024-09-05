@@ -64,17 +64,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     });
 
+    if (!account) {
+      throw new Error("Sua sessão não é válida.", {
+        cause: "ERROR_UNAUTHORIZED",
+      });
+    }
+
     // Validando sessão com o instagram se houver um token.
     if (account && account.access_token) {
       const instagramSession = await validateInstagramSession(
         account.access_token
       );
 
-      return {
-        props: {
-          account,
-        },
-      };
+      if (instagramSession) {
+        return {
+          props: {
+            account,
+          },
+        };
+      }
     }
 
     const { code } = context.query; // Captura o código de autorização do Instagram

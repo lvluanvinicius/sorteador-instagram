@@ -11,7 +11,7 @@ export function Form() {
   const [keysSelected, setKeysKeySelected] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [timerOpen, setTimerOpen] = useState(false);
-  const [timerValue, setTimerValue] = useState<number>(5);
+  const [timerValue, setTimerValue] = useState<number>(7);
 
   const handleSort = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {

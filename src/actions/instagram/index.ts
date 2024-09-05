@@ -5,7 +5,7 @@ export const config = {
   auth_url: "https://api.instagram.com/oauth/authorize",
   client_id: process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID,
   redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/raffle-maker/instagram`,
-  scope: "user_profile,user_media",
+  scope: "business_basic,business_manage_comments",
 };
 
 export function signIn() {

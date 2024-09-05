@@ -19,18 +19,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       `https://graph.instagram.com/${post}/comments?fields=id,text,username&access_token=${access_token}`
     );
 
-    console.log(await response.json());
-
     if (response.ok) {
       // Recuperando dados em json.
-      const data = (await response.json()) as InstagramReturnApi<
-        InstagramPosts[]
-      >;
+      const data = (await response.json()) as InstagramReturnApi<any[]>;
+
+      console.log("Dados dos comentários recuperados:", data);
 
       return res.status(200).json({
         status: true,
-        message: "Posts recuperados com sucesso.",
-        data: data.data,
+        message: "Comentários recuperados com sucesso.",
+        data: data,
       });
     }
 

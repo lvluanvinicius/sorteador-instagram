@@ -14,17 +14,22 @@ export async function validateInstagramSession(accessToken: string) {
     const response = await fetch(
       `https://graph.instagram.com/me?fields=id,username&access_token=${accessToken}`
     );
-    const data = await response.json();
+    const data = (await response.json()) as InstagramReturnApi<[]>;
 
     if (response.ok) {
       return data; // Retorna os dados do usuário se o token for válido
     } else {
-      throw new Error(
-        "Sessão com instagram inválida, por favor, efetue login novamente.",
-        {
+      if (data.error) {
+        if (data.error.code === 190) return false;
+
+        throw new Error(data.error.message, {
           cause: "ERROR_INSTAGRAM_UNAUTHENTICATED",
-        }
-      ); // Token inválido ou expirado
+        });
+      }
+
+      throw new Error("Houve um ao validar a sessão com o instagram.", {
+        cause: "ERROR_INSTAGRAM_UNAUTHENTICATED",
+      });
     }
   } catch (error) {
     if (error instanceof Error) {

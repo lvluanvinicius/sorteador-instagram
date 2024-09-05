@@ -28,4 +28,15 @@ declare interface InstagramReturnApi<T> {
       after: string;
     };
   };
+  error?: {
+    message: string;
+    type: string;
+    code: number;
+    fbtrace_id: string;
+  };
+}
+
+declare module "*.mp4" {
+  const src: string;
+  export default src;
 }
