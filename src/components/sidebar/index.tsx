@@ -14,6 +14,11 @@ export function Sidebar() {
       link: "/account",
       icon: <UserCircleGear size={32} />,
     },
+    {
+      name: "Histórico de Sorteios",
+      link: "/raffle-maker/histories",
+      icon: <Funnel size={32} />,
+    },
   ];
 
   return (
