@@ -47,18 +47,36 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  password      String
-  username      String    @unique
-  emailVerified DateTime? @map("email_verified")
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  Raffles       Raffles[]
+  id               String             @id @default(cuid())
+  name             String?
+  email            String?            @unique
+  password         String
+  username         String             @unique
+  emailVerified    DateTime?          @map("email_verified")
+  image            String?
+  accounts         Account[]
+  sessions         Session[]
+  Raffles          Raffles[]
+  RafflesInstances RafflesInstances[]
 
   @@map("users")
+}
+
+model RafflesInstances {
+  id String @id @default(cuid())
+
+  description String @db.Text
+
+  user_id String
+
+  code String @db.Text
+
+  type String
+
+  User    User      @relation(fields: [user_id], references: [id])
+  Raffles Raffles[]
+
+  @@map("raffles_instances")
 }
 
 model Raffles {
@@ -70,7 +88,10 @@ model Raffles {
 
   sort_date DateTime
 
-  User User @relation(fields: [user_id], references: [id])
+  rafflesInstancesId String @map("raffles_instances_id")
+
+  User             User             @relation(fields: [user_id], references: [id])
+  RafflesInstances RafflesInstances @relation(fields: [rafflesInstancesId], references: [id])
 
   @@map("raffles")
 }

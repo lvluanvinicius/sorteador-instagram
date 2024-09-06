@@ -37,13 +37,14 @@ export function SessionProvider({ children }: SessionProvider) {
     const response = await fetch("/api/web-token");
     const responseJson = (await response.json()) as { session_token?: string };
 
-    if (window !== undefined) {
-      if (responseJson && responseJson.session_token) {
-        nookies.destroy(null, "_sort_app.webtoken");
-        nookies.set(null, "_sort_app.webtoken", responseJson.session_token, {
-          maxAge: 60 * 60 * 60,
-        });
-      }
+    if (responseJson && responseJson.session_token) {
+      nookies.destroy(null, "_sort_app.webtoken", {
+        path: "/",
+      });
+      nookies.set(null, "_sort_app.webtoken", responseJson.session_token, {
+        maxAge: 60 * 60 * 60,
+        path: "/",
+      });
     }
   }, []);
 
@@ -89,7 +90,7 @@ export function SessionProvider({ children }: SessionProvider) {
 
       return router.replace("/sign-in");
     }
-  }, [router, isAuthenticated]);
+  }, [router, isAuthenticated, user]);
 
   useEffect(() => {
     webToken();

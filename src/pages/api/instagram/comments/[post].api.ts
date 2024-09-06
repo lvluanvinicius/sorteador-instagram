@@ -16,12 +16,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     // Recuperando posts.
     const response = await fetch(
-      `https://graph.instagram.com/${post}/comments?fields=id,text,username&access_token=${access_token}`
+      `https://graph.instagram.com/${post}/comments?fields=id,text,username&access_token=${access_token}&after=QVFIUlVGUVJfZAnZAoenJ3TmdLU0pyRzZAkY0ZAadVFzZAzVGSlFaZA3FJU0xCVVk1WDRteDlvY0pUd21SUmVsbGVuVy1GOFhXTHd2b051OU5OcC1oYjRwVUdROFRR`
     );
 
     if (response.ok) {
       // Recuperando dados em json.
-      const data = (await response.json()) as InstagramReturnApi<any[]>;
+      const data = (await response.json()) as InstagramReturnApi<[]>;
 
       console.log("Dados dos comentários recuperados:", data);
 
@@ -32,7 +32,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       });
     }
 
-    throw new Error("Erro na resposta ao tentar recuperar os posts.", {
+    throw new Error("errors.me", {
       cause: "ERROR_FETCH_RETURN",
     });
   } catch (error) {
@@ -48,4 +48,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-export default handler;
+export default apiAuth(handler);

@@ -65,6 +65,7 @@ export function apiAuth(handler: NextApiHandler) {
         }
 
         req.access_token = session.access_token as string;
+        req.user_id = session.userId as string;
 
         return handler(req, res);
       }
@@ -115,6 +116,7 @@ export function apiAuth(handler: NextApiHandler) {
       }
 
       req.access_token = session.access_token as string;
+      req.user_id = session.userId as string;
 
       return handler(req, res);
     } catch (error) {

@@ -3,7 +3,7 @@ import { Card, CardHeader, CardBody, Button, Input } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -27,24 +27,27 @@ export function Form() {
     resolver: zodResolver(signInSchema),
   });
 
-  const handleSignIn = async ({ password, username }: SignInType) => {
-    try {
-      // Redirecionar ou lidar com a resposta aqui
-      const auth = await signIn(username, password);
+  const handleSignIn = useCallback(
+    async ({ password, username }: SignInType) => {
+      try {
+        // Redirecionar ou lidar com a resposta aqui
+        const auth = await signIn(username, password);
 
-      if (auth.status) {
-        return router.push("/account");
-      }
+        if (auth.status) {
+          return router.push("/account");
+        }
 
-      throw new Error(auth.message);
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Houve um erro desconhecido.");
+        throw new Error(auth.message);
+      } catch (error) {
+        if (error instanceof Error) {
+          toast.error(error.message);
+        } else {
+          toast.error("Houve um erro desconhecido.");
+        }
       }
-    }
-  };
+    },
+    [signIn, router]
+  );
 
   useEffect(() => {
     async () => {
@@ -52,7 +55,7 @@ export function Form() {
         return router.replace("/account");
       }
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, router]);
 
   return (
     <Card className="w-[350px] h-[300px] translate-x-[-50%] translate-y-[-50%] absolute top-[50%] left-[50%]">

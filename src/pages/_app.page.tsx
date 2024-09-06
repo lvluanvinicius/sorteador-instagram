@@ -8,10 +8,7 @@ import { queryClient } from "@/services/queryClient";
 
 import "../styles/globals.css";
 
-export default function App({
-  pageProps: { session, ...pageProps },
-  Component,
-}: AppProps) {
+export default function App({ pageProps, Component }: AppProps) {
   return (
     <ChakraProvider theme={customTheme}>
       <Toaster richColors closeButton />

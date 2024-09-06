@@ -43,5 +43,12 @@ export function apiHandlerErros(error: Error, res: NextApiResponse) {
         message: error.message,
         data: null,
       });
+
+    default:
+      return res.status(400).json({
+        status: false,
+        message: error.message,
+        data: null,
+      });
   }
 }

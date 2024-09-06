@@ -8,10 +8,10 @@ export function Page() {
         <div>
           <h2 className="text-md">Termos de Uso</h2>
           <p className="text-justify">
-            Estes Termos de Uso regem o uso da nossa aplicação ("nós", "nosso"
-            ou "nossa aplicação") de sorteio baseada em comentários de posts do
-            Instagram. Ao utilizar nosso serviço, você concorda com os termos
-            descritos abaixo.
+            Estes Termos de Uso regem o uso da nossa aplicação (&quot;nós&quot;,
+            &quot;nosso&quot; ou &quot;nossa aplicação&quot;) de sorteio baseada
+            em comentários de posts do Instagram. Ao utilizar nosso serviço,
+            você concorda com os termos descritos abaixo.
           </p>
         </div>
 
@@ -74,10 +74,10 @@ export function Page() {
         <div className="text-justify">
           <h4>5 - Limitação de Responsabilidade</h4>
           <p>
-            Nossa aplicação é fornecida "como está", sem garantias de qualquer
-            tipo, expressas ou implícitas. Não nos responsabilizamos por
-            qualquer dano direto, indireto, incidental ou consequente decorrente
-            do uso ou da incapacidade de usar o serviço.
+            Nossa aplicação é fornecida &quot;como está&quot;, sem garantias de
+            qualquer tipo, expressas ou implícitas. Não nos responsabilizamos
+            por qualquer dano direto, indireto, incidental ou consequente
+            decorrente do uso ou da incapacidade de usar o serviço.
           </p>
         </div>
 

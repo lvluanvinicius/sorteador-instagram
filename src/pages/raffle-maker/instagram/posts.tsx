@@ -8,8 +8,6 @@ interface InstagramPage {
 }
 
 export function Posts({ account }: InstagramPage) {
-  console.log(account.access_token);
-
   const { data: posts } = useQuery({
     queryKey: ["instagram_posts"],
     queryFn: () => getPosts({ access_token: account.access_token as string }),
@@ -22,7 +20,7 @@ export function Posts({ account }: InstagramPage) {
   return (
     <div className="grid md:grid-cols-5 xl:col-span-5 gap-4">
       {posts.data.map((post) => {
-        return <CardPost post={post} />;
+        return <CardPost key={post.id} post={post} />;
       })}
     </div>
   );

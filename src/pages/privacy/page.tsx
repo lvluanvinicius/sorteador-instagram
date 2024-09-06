@@ -8,11 +8,11 @@ export function Page() {
         <div>
           <h2 className="text-md">Política de Privacidade</h2>
           <p className="text-justify">
-            Esta Política de Privacidade descreve como sua aplicação ("nós",
-            "nosso" ou "nossa aplicação") coleta, usa, compartilha e protege as
-            informações pessoais dos usuários ("você" ou "seu") ao utilizar
-            nosso serviço de sorteio baseado em comentários de posts do
-            Instagram.
+            Esta Política de Privacidade descreve como sua aplicação
+            (&quot;nós&quot;, &quot;nosso&quot; ou &quot;nossa aplicação&quot;)
+            coleta, usa, compartilha e protege as informações pessoais dos
+            usuários (&quot;você&quot; ou &quot;seu&quot;) ao utilizar nosso
+            serviço de sorteio baseado em comentários de posts do Instagram.
           </p>
         </div>
 

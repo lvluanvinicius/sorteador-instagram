@@ -126,12 +126,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       body: formData.toString(),
     });
 
-    const data = (await response.json()) as {
-      access_token: string;
-      user_id: string;
-      permissions: string[];
-    }; // Lê a resposta JSON
-
     if (!response.ok) {
       // Lida com erros de resposta
       return {
@@ -139,9 +133,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       };
     }
 
+    const data = (await response.json()) as {
+      access_token: string;
+      user_id: string;
+      permissions: string[];
+    }; // Lê a resposta JSON
+
+    console.log("linha 142");
+
     // Valida se a conta existe e cria se não existir.
     if (!account) {
-      // Cria uma nova conta se não existir.
+      console.log("linha 146");
+
+      // Cria uma nova conta se não existir. @Ca.Mbueno@310797
       await prisma.account.create({
         data: {
           provider: "instagram",
@@ -152,17 +156,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
       });
     } else {
+      account.access_token = data.access_token;
+      account.providerAccountId = data.user_id.toString();
+
       // Atualiza a conta existente se houver.
       await prisma.account.update({
-        data: {
-          providerAccountId: data.user_id.toString(),
-          access_token: data.access_token,
-        },
+        data: account,
         where: {
           id: account.id,
         },
       });
+
+      console.log("linha 170");
     }
+
+    console.log("linha 174");
 
     return {
       props: { account },

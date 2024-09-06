@@ -1,6 +1,7 @@
 import { apiHandlerErros } from "@/exceptions/api_handler_erros";
 import { prisma } from "@/lib/prisma";
 import { apiAuth } from "@/middlewares/api-auth";
+import { getCookieValueFromRequest } from "@/utils/browser";
 import { getCurrentTimeInZone } from "@/utils/formatter";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -30,15 +31,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     // Recuperando valores no body.
-    const { type, sorted_value } = req.body;
+    const { type, sorted_value, code } = req.body;
 
     // Criando objeto com os dados necessários.
-    const data = { type, sorted_value } as {
+    const data = { type, sorted_value, code } as {
       type: string;
       sorted_value: string;
       user_id: string;
       sort_date: Date;
+      code: string;
+      rafflesInstancesId: string;
     };
+
+    // Recuperando id de instancia.
+    data.rafflesInstancesId = getCookieValueFromRequest(
+      req,
+      "instance_id"
+    ) as string;
 
     // Recuperando data do sorteio.
     data.sort_date = getCurrentTimeInZone("date") as Date;

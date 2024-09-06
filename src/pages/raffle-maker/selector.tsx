@@ -1,14 +1,9 @@
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Text,
-  useTheme,
-} from "@chakra-ui/react";
+import { Card, CardBody, CardHeader, Text, useTheme } from "@chakra-ui/react";
 import { Funnel, InstagramLogo } from "@phosphor-icons/react";
-import Link from "next/link";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import { FormCreateInstance } from "./components/form-create-instance";
 
 export function Selector() {
   const theme = useTheme();
@@ -24,6 +19,7 @@ export function Selector() {
       ),
       icon: <Funnel size={40} />,
       path: `${router.pathname}/simple`,
+      type: "simple",
     },
     {
       id: 2,
@@ -39,8 +35,17 @@ export function Selector() {
       ),
       icon: <InstagramLogo size={40} />,
       path: `${router.pathname}/instagram`,
+      type: "instagram",
     },
   ];
+
+  useEffect(() => {
+    if (router.query.error) {
+      console.log(router.query.error);
+
+      toast.error(router.query.error);
+    }
+  }, [router.query]);
 
   return (
     <div className="w-screen flex items-center justify-center">
@@ -48,16 +53,14 @@ export function Selector() {
         <div className="grid xl:grid-cols-6 md:grid-cols-3 mt-4 gap-4">
           {sortList.map((sort) => {
             return (
-              <Link href={sort.path} key={sort.id}>
-                <Card>
-                  <CardHeader className="flex items-center gap-2">
-                    {sort.icon} {sort.title}
-                  </CardHeader>
-                  <CardBody className="flex items-center justify-around">
-                    <Button className="w-full">Começar</Button>
-                  </CardBody>
-                </Card>
-              </Link>
+              <Card key={sort.id}>
+                <CardHeader className="flex items-center gap-2">
+                  {sort.icon} {sort.title}
+                </CardHeader>
+                <CardBody className="flex items-center justify-around">
+                  <FormCreateInstance type={sort.type} />
+                </CardBody>
+              </Card>
             );
           })}
         </div>
