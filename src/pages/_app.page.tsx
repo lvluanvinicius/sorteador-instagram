@@ -5,18 +5,21 @@ import { Toaster } from "sonner";
 import { SessionProvider } from "@/contexts/session";
 import customTheme from "@/styles/themes";
 import { queryClient } from "@/services/queryClient";
+import { HelmetProvider } from "react-helmet-async";
 
 import "../styles/globals.css";
 
 export default function App({ pageProps, Component }: AppProps) {
   return (
-    <ChakraProvider theme={customTheme}>
-      <Toaster richColors closeButton />
-      <QueryClientProvider client={queryClient}>
-        <SessionProvider>
-          <Component {...pageProps} />
-        </SessionProvider>
-      </QueryClientProvider>
-    </ChakraProvider>
+    <HelmetProvider>
+      <ChakraProvider theme={customTheme}>
+        <Toaster richColors closeButton />
+        <QueryClientProvider client={queryClient}>
+          <SessionProvider>
+            <Component {...pageProps} />
+          </SessionProvider>
+        </QueryClientProvider>
+      </ChakraProvider>
+    </HelmetProvider>
   );
 }

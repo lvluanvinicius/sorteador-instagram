@@ -1,3 +1,6 @@
+import { parseISO, format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+
 export function decodeErrorMessage(message: string) {
   try {
     // Tenta decodificar como UTF-8 usando TextDecoder, que é mais robusto para diferentes encodings
@@ -76,3 +79,10 @@ export function getCurrentTimeInZone(
       );
   }
 }
+
+export const dateExtFormatter = (date: string) => {
+  if (!date) return "Sem dados";
+  return format(parseISO(date), `'dia' dd MMMM yyyy 'às' HH:mm`, {
+    locale: ptBR,
+  });
+};

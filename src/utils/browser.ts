@@ -1,7 +1,6 @@
 import { parseCookies } from "nookies";
 import { IncomingMessage } from "http";
 import { NextApiRequest } from "next";
-import { NextRequest } from "next/server";
 
 /**
  * Recupera o valor de um cookie específico pelo nome.

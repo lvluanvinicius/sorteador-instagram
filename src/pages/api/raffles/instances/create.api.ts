@@ -7,6 +7,13 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
+    // Validando metodo.
+    if (req.method !== "POST") {
+      throw new Error("Method is not allowed.", {
+        cause: "METHOD_NOT_ALLOWED",
+      });
+    }
+
     const { type, description } = req.body as {
       type: string;
       post?: string;

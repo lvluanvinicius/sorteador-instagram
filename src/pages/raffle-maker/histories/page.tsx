@@ -1,9 +1,10 @@
-import { Card, Heading, useTheme } from "@chakra-ui/react";
+import { getRafflesInstances } from "@/services/queries/raffles-instances";
+import { Card, Heading, Skeleton, useTheme } from "@chakra-ui/react";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useCallback } from "react";
 
 export function Page() {
-  const theme = useTheme();
   const router = useRouter();
 
   const handlerOpenRaffle = useCallback(
@@ -12,6 +13,11 @@ export function Page() {
     },
     [router]
   );
+
+  const { data: rafflesInstances } = useQuery({
+    queryKey: ["raffles-instances"],
+    queryFn: getRafflesInstances,
+  });
 
   return (
     <div className="flex flex-col w-full items-center">
@@ -25,31 +31,42 @@ export function Page() {
             <thead className="text-center w-full dark:bg-slate-700 rounded">
               <tr className="">
                 <th className="py-5 !rounded-tl-md">ID</th>
-                <th className="py-5">Usuário Responsável</th>
                 <th className="py-5">Descrição</th>
-                <th className="py-5 rounded-tr-md">Data de Sorteio</th>
+                <th className="py-5 !rounded-tr-md">Data de Sorteio</th>
               </tr>
             </thead>
 
             <tbody className="text-center">
-              <tr
-                className="bg-gray-900 hover:bg-gray-800 cursor-pointer"
-                onClick={() => handlerOpenRaffle("id")}
-              >
-                <td className="py-4">cm0qrsude0003jnxjriquyagu</td>
-                <td className="py-4">Luan Santos</td>
-                <td className="py-4">instagram</td>
-                <td className="py-4">Sorteio do Celular velho.</td>
-              </tr>
-              <tr
-                className="bg-gray-900 hover:bg-gray-800 cursor-pointer"
-                onClick={() => handlerOpenRaffle("id")}
-              >
-                <td className="py-4">cm0qtgd5p0005jnxj6biss2xm</td>
-                <td className="py-4">Luan Santos</td>
-                <td className="py-4">simple</td>
-                <td className="py-4">Apenas um teste.</td>
-              </tr>
+              {rafflesInstances
+                ? rafflesInstances.data.map((instance) => {
+                    return (
+                      <tr
+                        key={instance.id}
+                        className="bg-gray-900 hover:bg-gray-800 cursor-pointer"
+                        onClick={() => handlerOpenRaffle(instance.id)}
+                      >
+                        <td className="py-4">{instance.id}</td>
+                        <td className="py-4">{instance.type}</td>
+                        <td className="py-4">{instance.description}</td>
+                      </tr>
+                    );
+                  })
+                : [1, 2, 3, 4].map((item) => (
+                    <tr
+                      key={item}
+                      className="bg-gray-900 hover:bg-gray-800 cursor-pointer"
+                    >
+                      <td className="py-4 px-10">
+                        <Skeleton className="h-5 w-full" />
+                      </td>
+                      <td className="py-4 px-10">
+                        <Skeleton className="h-5 w-full" />
+                      </td>
+                      <td className="py-4 px-10">
+                        <Skeleton className="h-5 w-full" />
+                      </td>
+                    </tr>
+                  ))}
             </tbody>
           </table>
         </div>

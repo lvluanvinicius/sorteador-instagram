@@ -52,9 +52,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     // Validando se sessão foi localizada.
     if (!session) {
-      throw new Error("Sua sessão não é válida.", {
-        cause: "ERROR_UNAUTHORIZED",
-      });
+      return {
+        redirect: {
+          destination: "/sign-in",
+          permanent: false,
+        },
+      };
     }
 
     // Recuperando conta.
@@ -65,9 +68,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     });
 
     if (!account) {
-      throw new Error("Sua sessão não é válida.", {
-        cause: "ERROR_UNAUTHORIZED",
-      });
+      return {
+        redirect: {
+          destination: "/sign-in",
+          permanent: false,
+        },
+      };
     }
 
     // Validando sessão com o instagram se houver um token.
@@ -99,8 +105,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       client_secret: process.env.INSTAGRAM_CLIENT_SECRET,
       redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/raffle-maker/instagram`,
       grant_type: "authorization_code",
-      code: code,
+      code: code as string,
     };
+
+    console.log(config);
 
     // Usando FormData para construir o corpo da solicitação POST
     const formData = new URLSearchParams();
@@ -108,17 +116,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     formData.append("client_secret", config.client_secret as string);
     formData.append("grant_type", config.grant_type);
     formData.append("redirect_uri", config.redirect_uri);
-    formData.append("code", config.code as string);
+    formData.append("code", config.code);
 
-    // Criando URL de solicitação de troca de token.
-    const postUri = `${config.auth_url}?redirect_uri=${encodeURIComponent(
-      config.redirect_uri
-    )}?client_id=${config.client_id}&${config.client_secret}&grant_type=${
-      config.grant_type
-    }&code=${config.code}`;
-
-    // Efetuando a troca de do token.
-    const response = await fetch(postUri, {
+    // Efetuando a troca do token.
+    const response = await fetch(config.auth_url, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -127,6 +128,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     });
 
     if (!response.ok) {
+      console.log("Erro ao trocar o token: ", await response.json());
+
       // Lida com erros de resposta
       return {
         props: { account: null },
@@ -139,13 +142,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       permissions: string[];
     }; // Lê a resposta JSON
 
-    console.log("linha 142");
+    console.log(data);
 
     // Valida se a conta existe e cria se não existir.
     if (!account) {
-      console.log("linha 146");
-
-      // Cria uma nova conta se não existir. @Ca.Mbueno@310797
       await prisma.account.create({
         data: {
           provider: "instagram",
@@ -159,7 +159,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       account.access_token = data.access_token;
       account.providerAccountId = data.user_id.toString();
 
-      // Atualiza a conta existente se houver.
+      // Atualiza a conta existente.
       await prisma.account.update({
         data: account,
         where: {
@@ -167,15 +167,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
       });
 
-      console.log("linha 170");
+      console.log("Conta atualizada com sucesso.");
     }
-
-    console.log("linha 174");
 
     return {
       props: { account },
     };
   } catch (error) {
+    console.log("Erro:", error);
+
     return {
       props: { account: null },
     };

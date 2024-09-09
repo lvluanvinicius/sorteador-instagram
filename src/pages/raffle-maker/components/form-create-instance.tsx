@@ -14,7 +14,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
 import nookies from "nookies";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -48,7 +48,7 @@ export function FormCreateInstance({ type }: { type: string }) {
   const handlerSaveInstance = useCallback(
     async function ({ description, type }: CreateNewInstanceType) {
       try {
-        const response = await post<ReffleInstance>(
+        const response = await post<RafflesInstancesInterface>(
           "/api/raffles/instances/create",
           {
             type,

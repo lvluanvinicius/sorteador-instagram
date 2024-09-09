@@ -5,10 +5,24 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
+    // Validando metodo.
+    if (req.method !== "GET") {
+      throw new Error("Method is not allowed.", {
+        cause: "METHOD_NOT_ALLOWED",
+      });
+    }
+
+    // Recuperando
+    const raffles = await prisma.rafflesInstances.findMany({
+      where: {
+        user_id: req.user_id,
+      },
+    });
+
     return res.status(200).json({
       status: true,
-      message: "Instância criada com sucesso.",
-      data: "instance",
+      message: "Instâncias recuperadas com sucesso.",
+      data: raffles,
     });
   } catch (error) {
     if (error instanceof Error) {
