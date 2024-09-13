@@ -5,7 +5,6 @@ import { Button } from "@chakra-ui/react";
 import { signIn } from "@/actions/instagram";
 import { RaffleMakerLayout } from "@/components/layouts/raffle-maker";
 import InstagramProvider from "./auth-provider";
-import { Posts } from "./posts";
 import { Session } from "@prisma/client";
 
 interface InstagramPage {
@@ -16,7 +15,9 @@ export default function handler({ session }: InstagramPage) {
   return (
     <RaffleMakerLayout>
       <div className="flex flex-col justify-start items-center">
-        <InstagramProvider session={session}>Logado aqui...</InstagramProvider>
+        <InstagramProvider session={session}>
+          <Button onClick={signIn}>Entrar</Button>
+        </InstagramProvider>
       </div>
     </RaffleMakerLayout>
   );

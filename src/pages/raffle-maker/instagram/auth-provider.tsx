@@ -26,16 +26,16 @@ export default function InstagramProvider({
         "data_access_expiration_time"
       ) as string;
 
-      console.log(hashParams);
-
-      const response = get("/api/auth/instagram-token", {
-        queryParams: {
-          access_token: accessToken,
-          expires_in: expiresIn,
-          state,
-          data_access_expiration_time: dataAccessExpirationTime,
-        },
-      });
+      if (accessToken) {
+        const response = get("/api/auth/instagram-token", {
+          queryParams: {
+            access_token: accessToken,
+            expires_in: expiresIn,
+            state,
+            data_access_expiration_time: dataAccessExpirationTime,
+          },
+        });
+      }
     }
   }, []);
 
