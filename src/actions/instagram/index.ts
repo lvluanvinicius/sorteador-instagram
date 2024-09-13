@@ -2,11 +2,12 @@ import { toast } from "sonner";
 import nookies from "nookies";
 
 export const config = {
-  auth_url: "https://api.instagram.com/oauth/authorize",
+  auth_url: "https://www.facebook.com/dialog/oauth",
   client_id: process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID,
   redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/raffle-maker/instagram`,
+  extras: JSON.stringify({ setup: { channel: "IG_API_ONBOARDING" } }),
   scope:
-    "business_basic,business_manage_messages,business_manage_comments,business_content_publish", //"business_basic,business_manage_comments",
+    "instagram_basic,instagram_content_publish,instagram_manage_comments,instagram_manage_insights,pages_show_list,pages_read_engagement",
 };
 
 export function signIn() {
@@ -24,10 +25,12 @@ export function signIn() {
     // Criando URL de login do instagram.
     const authUrl = `${config.auth_url}?redirect_uri=${encodeURIComponent(
       config.redirect_uri
-    )}&client_id=${config.client_id}&response_type=code&scope=${
+    )}&client_id=${config.client_id}&response_type=token&display=page&scope=${
       config.scope
     }&state=${web_token["_sort_app.webtoken"]}`;
 
     return (window.location.href = authUrl);
   }
 }
+
+// "business_basic,business_manage_messages,business_manage_comments,business_content_publish", //"business_basic,business_manage_comments",
