@@ -1,22 +1,23 @@
 import { GetServerSideProps } from "next";
 import { getCookieValueFromRequest } from "@/utils/browser";
 import { prisma } from "@/lib/prisma";
-import { Button } from "@chakra-ui/react";
-import { signIn } from "@/actions/instagram";
 import { RaffleMakerLayout } from "@/components/layouts/raffle-maker";
 import InstagramProvider from "./auth-provider";
 import { Session } from "@prisma/client";
+import { Posts } from "./posts";
 
 interface InstagramPage {
   session: Session | null;
 }
 
 export default function handler({ session }: InstagramPage) {
+  if (!session) return null;
+
   return (
     <RaffleMakerLayout>
       <div className="flex flex-col justify-start items-center">
         <InstagramProvider session={session}>
-          <Button onClick={signIn}>Entrar</Button>
+          <Posts session={session} />
         </InstagramProvider>
       </div>
     </RaffleMakerLayout>
@@ -59,8 +60,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       props: { session },
     };
   } catch (error) {
-    console.log("Erro:", error);
-
     return {
       props: { account: null },
     };

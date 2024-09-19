@@ -14,22 +14,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       });
     }
 
-    // Recuperando o token nos cookies.
-    const { access_token } = req;
-
-    // Recuperando usuário.
-    const session = await prisma.session.findFirst({
-      where: {
-        access_token,
-      },
-    });
-
-    if (!session) {
-      throw new Error("Sua sessão é inválida.", {
-        cause: "ERROR_UNAUTHORIZED",
-      });
-    }
-
     // Recuperando valores no body.
     const { type, sorted_value, code } = req.body;
 
@@ -49,11 +33,27 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       "instance_id"
     ) as string;
 
+    // Validar se o valor já foi sorteado antes de salvar.
+    const isSorted = await prisma.raffles.findFirst({
+      where: {
+        sorted_value,
+        rafflesInstancesId: data.rafflesInstancesId,
+      },
+    });
+
+    if (isSorted) {
+      return res.status(200).json({
+        status: false,
+        message: `Oooops! Esse valor "${sorted_value}" já foi sorteado nessa instância. Só é permitido apenas um sorteio para cada valor.`,
+        data: null,
+      });
+    }
+
     // Recuperando data do sorteio.
     data.sort_date = getCurrentTimeInZone("date") as Date;
 
     // Inserindo ID de usuário.
-    data.user_id = session.userId as string;
+    data.user_id = req.user_id as string;
 
     // Salvando sorteio.
     const sort = await prisma.raffles.create({
@@ -69,7 +69,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     return res.status(200).json({
       status: true,
-      message: "Resutado salvo com sucess.",
+      message: "Resutado salvo com sucesso.",
       data: sort,
     });
   } catch (error) {

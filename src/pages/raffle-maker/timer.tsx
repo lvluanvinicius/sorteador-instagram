@@ -1,5 +1,5 @@
 import { VideoPlayer } from "@/components/video-play";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export function Timer({
   open,
@@ -14,6 +14,8 @@ export function Timer({
 }) {
   const [isVisible, setIsVisible] = useState(open); // Estado para controlar a visibilidade
   const [isFadingOut, setIsFadingOut] = useState(false); // Estado para controlar o fade-out
+  const videoRef = useRef<HTMLVideoElement>(null); // Referência para o elemento de vídeo
+  const [isPlaying, setIsPlaying] = useState(false); // Estado para controlar quando o vídeo está em reprodução
 
   const alterTimer = useCallback(() => {
     const intervalId = setInterval(() => {
@@ -39,17 +41,31 @@ export function Timer({
       setIsFadingOut(false); // Reseta o estado de fade-out
       const intervalId = alterTimer();
 
+      // Quando o timer é acionado, garantimos que o vídeo reinicia do começo
+      if (videoRef.current && !isPlaying) {
+        videoRef.current.currentTime = 0; // Reinicia o vídeo
+        videoRef.current.play(); // Dá play no vídeo
+        setIsPlaying(true); // Define como vídeo em execução
+      }
+
       return () => {
         clearInterval(intervalId);
       };
     }
-  }, [open, alterTimer]);
+  }, [open, alterTimer, isPlaying]);
 
   useEffect(() => {
     if (open) {
       setTimerValue(7); // Reinicia o timer para 7 segundos
     }
   }, [open, setTimerValue]);
+
+  // Função que será executada quando o vídeo terminar
+  const handleVideoEnded = () => {
+    console.log("O vídeo terminou");
+    setIsPlaying(false); // Permite que o vídeo possa ser reproduzido novamente no futuro
+    // Aqui você pode adicionar mais lógica, como acionar outro vídeo ou apenas encerrar
+  };
 
   return (
     <div
@@ -58,7 +74,11 @@ export function Timer({
       }`}
     >
       <div className="w-full h-full">
-        <VideoPlayer src="/uploads/contagem.mp4" />
+        <VideoPlayer
+          ref={videoRef}
+          src="/uploads/contagem.mp4"
+          onEnded={handleVideoEnded}
+        />
       </div>
     </div>
   );

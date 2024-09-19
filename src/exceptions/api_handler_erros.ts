@@ -13,6 +13,13 @@ export function apiHandlerErros(
         data,
       });
 
+    case "UNAUTHORIZED":
+      return res.status(401).json({
+        status: false,
+        message: error.message,
+        data,
+      });
+
     case "INVALID_CONTENT_QUERY":
       return res.status(200).json({
         status: false,

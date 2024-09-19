@@ -7,7 +7,7 @@ export const config = {
   redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/raffle-maker/instagram`,
   extras: JSON.stringify({ setup: { channel: "IG_API_ONBOARDING" } }),
   scope:
-    "instagram_basic,instagram_content_publish,instagram_manage_comments,instagram_manage_insights,pages_show_list,pages_read_engagement",
+    "pages_show_list,business_management,instagram_basic,instagram_manage_comments,instagram_manage_insights,instagram_content_publish,pages_read_engagement,pages_manage_metadata,pages_read_user_content,pages_manage_posts,pages_manage_engagement",
 };
 
 export function signIn() {

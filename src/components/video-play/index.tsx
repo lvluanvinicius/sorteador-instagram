@@ -1,6 +1,9 @@
-import { useEffect, useState } from "react";
+import { forwardRef, LegacyRef, useEffect, useState } from "react";
 
-export function VideoPlayer({ src }: { src: string }) {
+export const VideoPlayer = forwardRef<
+  HTMLVideoElement,
+  { src: string; onEnded: () => void }
+>(({ src, onEnded }, ref) => {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -13,9 +16,17 @@ export function VideoPlayer({ src }: { src: string }) {
   }
 
   return (
-    <video controls={false} autoPlay muted className="!w-screen h-screen">
+    <video
+      ref={ref} // Aqui usamos a ref corretamente com forwardRef
+      controls={false}
+      muted
+      className="!w-screen h-screen"
+      onEnded={onEnded} // Chama a função quando o vídeo termina
+    >
       <source src={src} type="video/mp4" className="w-screen h-screen" />
       Seu navegador não suporta o elemento de vídeo.
     </video>
   );
-}
+});
+
+VideoPlayer.displayName = "VideoPlayer"; // Necessário para componentes com forwardRef

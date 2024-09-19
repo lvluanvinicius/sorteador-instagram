@@ -19,7 +19,7 @@ export function InputValues({ value, onChange }: InputValuesProps) {
       placeholder="Informe os nomes a serem sorteados separados por vírgula."
       bg="secondary.100"
       className="flex-1 !bg-transparent !border-none h-full placeholder:text-xl"
-      rows={5}
+      rows={10}
       cols={30}
       onChange={handlerChange}
       value={value}

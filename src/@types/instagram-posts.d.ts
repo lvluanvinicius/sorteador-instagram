@@ -4,4 +4,5 @@ declare interface InstagramPosts {
   media_type: string;
   media_url: string;
   timestamp: string;
+  comments_count: number;
 }

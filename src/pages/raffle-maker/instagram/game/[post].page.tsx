@@ -1,13 +1,21 @@
 import { prisma } from "@/lib/prisma";
-import { post } from "@/services/app";
 import { getCookieValueFromRequest } from "@/utils/browser";
+import { Session } from "@prisma/client";
 import { GetServerSideProps } from "next";
+import { Page } from "./page";
+import { RaffleMakerLayout } from "@/components/layouts/raffle-maker";
 
-export default function handler() {
+interface InstagramGamePage {
+  session: Session | null;
+}
+
+export default function handler({ session }: InstagramGamePage) {
+  if (!session) return null;
+
   return (
-    <div className="">
-      <div>teste</div>
-    </div>
+    <RaffleMakerLayout>
+      <Page session={session} />
+    </RaffleMakerLayout>
   );
 }
 
@@ -35,62 +43,28 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     // Validando se sessão foi localizada.
     if (!session) {
-      throw new Error("Sua sessão não é válida.", {
-        cause: "ERROR_UNAUTHORIZED",
-      });
-    }
-
-    // Recuperando id de instancia.
-    const instance_id = getCookieValueFromRequest(
-      context.req,
-      "instance_id"
-    ) as string;
-
-    // Valida se a instancia_id existe.
-    if (!instance_id) {
-      throw new Error("ID de instrancia para o sorteio não foi encontrado.");
-    }
-
-    console.log(
-      `${process.env.NEXT_PUBLIC_APP_URL}/api/instagram/comments/${context.query.post}`
-    );
-
-    // Recuperar comentários do instagram.
-    const response = await post(
-      `${process.env.NEXT_PUBLIC_APP_URL}/api/instagram/comments/${context.query.post}`,
-      null,
-      {
-        headers: {
-          Accept: "application/json",
-        },
-      }
-    );
-
-    console.log(response);
-  } catch (error) {
-    console.log(error);
-
-    // return { props: {} };
-    if (error instanceof Error) {
       return {
         redirect: {
-          destination: `/raffle-maker?error=${error.message}`,
+          destination: "/sign-in",
           permanent: false,
         },
       };
     }
 
+    if (!context.query.post) {
+      throw new Error("Id de post não encontrado.");
+    }
+
     return {
-      redirect: {
-        destination: `/raffle-maker?error=${"Houve um erro desconhecido."}`,
-        permanent: false,
-      },
+      props: { session },
+    };
+  } catch (error) {
+    console.log(error);
+
+    return {
+      props: { account: null },
     };
   } finally {
     await prisma.$disconnect();
   }
-
-  return {
-    props: {},
-  };
 };

@@ -1,17 +1,63 @@
-import { InputValues } from "@/components/raffle-maker/input-values";
+import { FetchError, get, post } from "@/services/app";
 import { removeDuplicated, sortKeys } from "@/utils/tools";
+import { Session } from "@prisma/client";
+import { useRouter } from "next/router";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { Button, Card, CardBody } from "@chakra-ui/react";
+import { Timer } from "../../timer";
 import { Funnel } from "@phosphor-icons/react";
-import { FormEvent, useCallback, useState } from "react";
-import { Timer } from "../timer";
-import { post } from "@/services/app";
+import { InputValues } from "@/components/raffle-maker/input-values";
 
-export function Form() {
+interface InstagramGamePage {
+  session: Session;
+}
+
+export function Page({ session }: InstagramGamePage) {
+  const router = useRouter();
+  const [timerOpen, setTimerOpen] = useState(false);
+  const [timerValue, setTimerValue] = useState<number>(7);
   const [keys, setKeys] = useState("");
   const [keysSelected, setKeysKeySelected] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [timerOpen, setTimerOpen] = useState(false);
-  const [timerValue, setTimerValue] = useState<number>(7);
+
+  const handlerGetComments = useCallback(
+    async function () {
+      try {
+        const response = await get(
+          `/api/instagram/comments/${router.query.post}`,
+          {
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
+
+        if (response.status) {
+          const { data } = response.data as {
+            data: InstagramComments[];
+          };
+
+          // Recuperando usuários.
+          const comments = removeDuplicated(
+            data.map((comment) => comment.username)
+          );
+
+          if (comments.length < 1) {
+            throw new Error(
+              "Nenhum usuário foi encontrado no post selecionado ou possui apenas um comentário. "
+            );
+          }
+
+          setKeys(comments.join(",\n"));
+
+          return;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [router]
+  );
 
   const handleSort = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
@@ -43,27 +89,40 @@ export function Form() {
 
       setKeysKeySelected(keySelected);
 
-      // Enviando resultado do sorteio para ser salvo.
-      const response = await post(
-        "/api/raffles/save",
-        {
-          type: "simple",
-          sorted_value: keySelected,
-        },
-        {
-          headers: {
-            Accept: "application/json",
+      try {
+        // Enviando resultado do sorteio para ser salvo.
+        const response = await post(
+          "/api/raffles/save",
+          {
+            type: "instagram",
+            sorted_value: keySelected,
           },
-        }
-      );
+          {
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
 
-      // Valida se foi salvo corretamente.
-      if (!response.status) {
-        setErrorMessage(response.message);
+        // Valida se foi salvo corretamente.
+        if (!response.status) {
+          setErrorMessage(response.message);
+        }
+      } catch (error) {
+        if (error instanceof FetchError) {
+          setErrorMessage(error.message);
+          return;
+        }
+
+        setErrorMessage("Houve um erro desconhecido.");
       }
     },
     [keys, setKeysKeySelected, setErrorMessage]
   );
+
+  useEffect(() => {
+    handlerGetComments();
+  }, [handlerGetComments]);
 
   return (
     <>

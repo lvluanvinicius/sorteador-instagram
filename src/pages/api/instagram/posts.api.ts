@@ -4,18 +4,23 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const { access_token } = req.query;
-
-    // Valida se o access_token foi informado.
-    if (!access_token) {
-      throw new Error("Parametro access_token não informado.", {
-        cause: "INVALID_CONTENT_QUERY",
+    // Validando metodo.
+    if (req.method !== "GET") {
+      throw new Error("Method is not allowed.", {
+        cause: "METHOD_NOT_ALLOWED",
       });
     }
 
-    // Recuperando posts.
+    if (!req.provider_token) {
+      throw new Error("Access token não configurado em sua conta.");
+    }
+
+    // Recuperando posts. ?fields=id,caption,media_type,media_url,timestamp
     const response = await fetch(
-      `https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,timestamp&access_token=${access_token}`
+      `https://graph.facebook.com/v20.0/${req.provider_account_id}/media?limit=100&fields=comments_count,id,media_type,media_url,caption,permalink,timestamp&access_token=${req.provider_token}`,
+      {
+        method: "GET",
+      }
     );
 
     if (response.ok) {
@@ -35,6 +40,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       cause: "ERROR_FETCH_RETURN",
     });
   } catch (error) {
+    console.log(error);
+
     if (error instanceof Error) {
       return apiHandlerErros(error, res);
     }
@@ -47,4 +54,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-export default handler;
+export default apiAuth(handler);

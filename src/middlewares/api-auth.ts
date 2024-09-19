@@ -64,8 +64,18 @@ export function apiAuth(handler: NextApiHandler) {
           });
         }
 
+        const account = await prisma.account.findFirst({
+          where: {
+            userId: session.userId as string,
+          },
+        });
+
         req.access_token = session.access_token as string;
         req.user_id = session.userId as string;
+        req.session_id = session.id as string;
+        req.account_id = account?.id;
+        req.provider_account_id = account?.providerAccountId;
+        req.provider_token = account?.access_token as string;
 
         return handler(req, res);
       }
@@ -115,8 +125,18 @@ export function apiAuth(handler: NextApiHandler) {
         });
       }
 
+      const account = await prisma.account.findFirst({
+        where: {
+          userId: session.userId as string,
+        },
+      });
+
       req.access_token = session.access_token as string;
       req.user_id = session.userId as string;
+      req.session_id = session.id as string;
+      req.account_id = account?.id;
+      req.provider_account_id = account?.providerAccountId;
+      req.provider_token = account?.access_token as string;
 
       return handler(req, res);
     } catch (error) {
