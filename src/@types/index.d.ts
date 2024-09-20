@@ -36,6 +36,15 @@ declare interface InstagramReturnApi<T> {
   };
 }
 
+declare interface ApiResponse<T> {
+  total: number;
+  pages: number;
+  current_page: number;
+  per_page: number;
+  total_page: number;
+  data: T;
+}
+
 declare module "*.mp4" {
   const src: string;
   export default src;

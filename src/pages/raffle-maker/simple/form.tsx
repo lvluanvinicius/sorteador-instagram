@@ -4,7 +4,7 @@ import { Button, Card, CardBody } from "@chakra-ui/react";
 import { Funnel } from "@phosphor-icons/react";
 import { FormEvent, useCallback, useState } from "react";
 import { Timer } from "../timer";
-import { post } from "@/services/app";
+import { post, FetchError } from "@/services/app";
 
 export function Form() {
   const [keys, setKeys] = useState("");
@@ -43,23 +43,32 @@ export function Form() {
 
       setKeysKeySelected(keySelected);
 
-      // Enviando resultado do sorteio para ser salvo.
-      const response = await post(
-        "/api/raffles/save",
-        {
-          type: "simple",
-          sorted_value: keySelected,
-        },
-        {
-          headers: {
-            Accept: "application/json",
+      try {
+        // Enviando resultado do sorteio para ser salvo.
+        const response = await post(
+          "/api/raffles/save",
+          {
+            type: "simple",
+            sorted_value: keySelected,
           },
-        }
-      );
+          {
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
 
-      // Valida se foi salvo corretamente.
-      if (!response.status) {
-        setErrorMessage(response.message);
+        // Valida se foi salvo corretamente.
+        if (!response.status) {
+          setErrorMessage(response.message);
+        }
+      } catch (error) {
+        if (error instanceof FetchError) {
+          setErrorMessage(error.message);
+          return;
+        }
+
+        setErrorMessage("Houve um erro desconhecido.");
       }
     },
     [keys, setKeysKeySelected, setErrorMessage]

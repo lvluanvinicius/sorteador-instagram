@@ -36,3 +36,18 @@ export function removeDuplicated(keys: string[]): string[] {
 
   return result;
 }
+
+/**
+ * Gera um array de numeros.
+ * @param min number
+ * @param max number
+ * @returns
+ */
+export function arrayNumberRandom(min: number, max: number): number[] {
+  const numbers = [];
+  for (let index = min; index < max; index++) {
+    numbers.push(index);
+  }
+
+  return numbers;
+}

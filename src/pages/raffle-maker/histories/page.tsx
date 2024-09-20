@@ -1,11 +1,14 @@
+import { Paginate } from "@/components/paginate";
 import { getRafflesInstances } from "@/services/queries/raffles-instances";
-import { Card, Heading, Skeleton, useTheme } from "@chakra-ui/react";
+import { arrayNumberRandom } from "@/utils/tools";
+import { Heading, Skeleton, useTheme } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useCallback } from "react";
 
 export function Page() {
   const router = useRouter();
+  const theme = useTheme();
 
   const handlerOpenRaffle = useCallback(
     function (id: string) {
@@ -15,17 +18,22 @@ export function Page() {
   );
 
   const { data: rafflesInstances } = useQuery({
-    queryKey: ["raffles-instances"],
-    queryFn: getRafflesInstances,
+    queryKey: ["raffles-instances", router.query],
+    queryFn: () => getRafflesInstances({ query: router.query }),
   });
 
   return (
     <div className="flex flex-col w-full items-center">
-      <div className="md:w-[70%]">
+      <div className="md:w-[70%] flex flex-col gap-4">
         <Heading as="h1" size="xl" mb="5" textAlign="center" color="white">
           Histórico de sorteios
         </Heading>
-
+        {rafflesInstances && (
+          <Paginate
+            current_page={rafflesInstances.data.current_page}
+            pages={rafflesInstances.data.pages}
+          />
+        )}
         <div className="w-full">
           <table className="w-full">
             <thead className="text-center w-full dark:bg-slate-700 rounded">
@@ -38,11 +46,11 @@ export function Page() {
 
             <tbody className="text-center">
               {rafflesInstances
-                ? rafflesInstances.data.map((instance) => {
+                ? rafflesInstances.data.data.map((instance) => {
                     return (
                       <tr
                         key={instance.id}
-                        className="bg-gray-900 hover:bg-gray-800 cursor-pointer"
+                        className={`bg-gray-900 hover:bg-gray-800 cursor-pointer border-b-[2px] border-[${theme.colors.primary.default}]`}
                         onClick={() => handlerOpenRaffle(instance.id)}
                       >
                         <td className="py-4">{instance.id}</td>
@@ -51,7 +59,7 @@ export function Page() {
                       </tr>
                     );
                   })
-                : [1, 2, 3, 4].map((item) => (
+                : [...arrayNumberRandom(0, 10)].map((item) => (
                     <tr
                       key={item}
                       className="bg-gray-900 hover:bg-gray-800 cursor-pointer"

@@ -4,6 +4,7 @@ import { Card, CardBody, Heading, Skeleton } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { Details } from "./details";
+import { arrayNumberRandom } from "@/utils/tools";
 
 interface PageProps {
   instance: RafflesInstancesInterface;
@@ -53,7 +54,7 @@ export function Page({ instance }: PageProps) {
             <h1 className="text-xl opacity-80 font-bold">Ganhadores</h1>
             <table>
               <thead className="text-center">
-                <tr className="bg-red-500 text-center w-full dark:bg-slate-700">
+                <tr className=" text-center w-full dark:bg-slate-700">
                   <th className="py-2 !rounded-tl-md">ID</th>
                   <th className="py-2">Valor Sorteado</th>
                   <th className="py-2 !rounded-tr-md">Data de Sorteio</th>
@@ -64,7 +65,7 @@ export function Page({ instance }: PageProps) {
                   ? raffles.data.map((raffle) => (
                       <Details key={raffle.id} raffle={raffle} />
                     ))
-                  : [1, 2, 3, 4].map((item) => (
+                  : [...arrayNumberRandom(0, 10)].map((item) => (
                       <tr
                         key={item}
                         className="text-center cursor-pointer hover:bg-slate-800"
