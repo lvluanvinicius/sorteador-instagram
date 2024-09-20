@@ -83,7 +83,7 @@ export function SessionProvider({ children }: SessionProvider) {
         "Houve um erro desconhecido ao recuperar o usuário de sessão."
       );
     }
-  }, [setUser, setIsAuthenticated]);
+  }, [setUser, setIsAuthenticated, router]);
 
   const signIn = useCallback(async (username: string, password: string) => {
     const response = await post("/api/sign-in", {

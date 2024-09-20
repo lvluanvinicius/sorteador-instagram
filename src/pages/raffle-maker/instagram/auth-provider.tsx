@@ -9,6 +9,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { toast } from "sonner";
 
 interface InstagramContextProps {
   socialAccount: FacebookAccounts | null;
@@ -58,39 +59,36 @@ export default function InstagramProvider({
         }
 
         if (error instanceof Error) {
-          console.log(error.message);
+          toast.error(error.message);
         }
       }
     },
     [setSocialAccount, setAuth, router]
   );
 
-  const handleGetTokenFacebook = useCallback(
-    async (hash: string) => {
-      const hashParams = new URLSearchParams(hash.substring(1)); // Remove o "#" do início
-      const accessToken = hashParams.get("access_token") as string;
-      const expiresIn = hashParams.get("expires_in") as string;
-      const state = hashParams.get("state") as string;
-      const dataAccessExpirationTime = hashParams.get(
-        "data_access_expiration_time"
-      ) as string;
+  const handleGetTokenFacebook = useCallback(async (hash: string) => {
+    const hashParams = new URLSearchParams(hash.substring(1)); // Remove o "#" do início
+    const accessToken = hashParams.get("access_token") as string;
+    const expiresIn = hashParams.get("expires_in") as string;
+    const state = hashParams.get("state") as string;
+    const dataAccessExpirationTime = hashParams.get(
+      "data_access_expiration_time"
+    ) as string;
 
-      if (accessToken) {
-        const response = await get("/api/auth/instagram-token", {
-          queryParams: {
-            access_token: accessToken,
-            expires_in: expiresIn,
-            state,
-            data_access_expiration_time: dataAccessExpirationTime,
-          },
-          headers: {
-            Accept: "application/json",
-          },
-        });
-      }
-    },
-    [router]
-  );
+    if (accessToken) {
+      const response = await get("/api/auth/instagram-token", {
+        queryParams: {
+          access_token: accessToken,
+          expires_in: expiresIn,
+          state,
+          data_access_expiration_time: dataAccessExpirationTime,
+        },
+        headers: {
+          Accept: "application/json",
+        },
+      });
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.location.hash) {

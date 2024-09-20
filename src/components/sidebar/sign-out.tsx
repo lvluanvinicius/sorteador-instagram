@@ -8,37 +8,39 @@ import { toast } from "sonner";
 export function Logout() {
   const router = useRouter();
 
-  const handleLogout = useCallback(async function () {
-    try {
-      const response = await post(
-        "/api/sign-out",
-        {},
-        { headers: { Accept: "application/json" } }
-      );
+  const handleLogout = useCallback(
+    async function () {
+      try {
+        const response = await post(
+          "/api/sign-out",
+          {},
+          { headers: { Accept: "application/json" } }
+        );
 
-      if (response.status) {
-        return router.push("/sign-in");
-      }
-
-      throw new Error(response.message);
-    } catch (error) {
-      if (error instanceof FetchError) {
-        if (error.status === 401) {
+        if (response.status) {
           return router.push("/sign-in");
         }
-        toast.error(error.message);
-        return;
-      }
 
-      if (error instanceof Error) {
-        toast.error(error.message);
-        return;
-      }
+        throw new Error(response.message);
+      } catch (error) {
+        if (error instanceof FetchError) {
+          if (error.status === 401) {
+            return router.push("/sign-in");
+          }
+          toast.error(error.message);
+          return;
+        }
 
-      toast.error("Houve um erro desconhecido.");
-    }
-    console.log("teste");
-  }, []);
+        if (error instanceof Error) {
+          toast.error(error.message);
+          return;
+        }
+
+        toast.error("Houve um erro desconhecido.");
+      }
+    },
+    [router]
+  );
 
   return (
     <ul className="">
