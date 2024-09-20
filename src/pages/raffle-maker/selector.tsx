@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { FormCreateInstance } from "./components/form-create-instance";
+import { NavigatePages } from "@/components/navigate-pages";
 
 export function Selector() {
   const theme = useTheme();
@@ -47,9 +48,24 @@ export function Selector() {
     }
   }, [router.query]);
 
+  const navigationOptions = [
+    {
+      name: "Início",
+      path: "/account",
+      active: false,
+    },
+    {
+      name: "Opções de Sorteios",
+      path: "",
+      active: true,
+    },
+  ];
+
   return (
     <div className="w-screen flex items-center justify-center">
       <div className="w-full max-w-[95vw] md:max-w-[90vw] py-4">
+        <NavigatePages links={navigationOptions} />
+
         <div className="grid xl:grid-cols-6 md:grid-cols-3 mt-4 gap-4">
           {sortList.map((sort) => {
             return (

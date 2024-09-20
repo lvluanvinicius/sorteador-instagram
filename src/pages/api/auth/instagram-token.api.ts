@@ -1,6 +1,7 @@
 import { apiAuth } from "@/middlewares/api-auth";
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma";
+import { apiHandlerErros } from "@/exceptions/api_handler_erros";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
@@ -105,8 +106,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       data: updateAccount,
     });
   } catch (error) {
-    // Captura erros de rede ou de solicitação
-    return res.status(500).json({ error: "Erro ao processar a solicitação." });
+    if (error instanceof Error) {
+      return apiHandlerErros(error, res);
+    }
+
+    return res.status(400).json({
+      status: false,
+      message: "Erro desconhecido.",
+      data: null,
+    });
   } finally {
     await prisma.$disconnect();
   }

@@ -1,49 +1,34 @@
 import { apiHandlerErros } from "@/exceptions/api_handler_erros";
 import { prisma } from "@/lib/prisma";
 import { apiAuth } from "@/middlewares/api-auth";
+import { getCurrentTimeInZone } from "@/utils/formatter";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     // Validando metodo.
-    if (req.method !== "GET") {
+    if (req.method !== "POST") {
       throw new Error("Method is not allowed.", {
         cause: "METHOD_NOT_ALLOWED",
       });
     }
 
-    // Recuperando o token nos cookies.
-    const { access_token } = req;
+    // Recuperando -1h para invalidar o token com a data de expiração..
+    const expires = getCurrentTimeInZone("number", "-1h") as number;
 
-    // Recuperando usuário.
-    const session = await prisma.session.findFirst({
+    await prisma.session.update({
       where: {
-        access_token,
+        id: req.session_id as string,
       },
-    });
-
-    if (!session) {
-      throw new Error("Sua sessão é inválida.", {
-        cause: "ERROR_UNAUTHORIZED",
-      });
-    }
-
-    // Recuperando usuário.
-    const user = await prisma.user.findUnique({
-      where: {
-        id: session.userId as string,
-      },
-      select: {
-        name: true,
-        email: true,
-        username: true,
+      data: {
+        expires,
       },
     });
 
     return res.status(200).json({
-      data: user,
       status: true,
-      message: "Usuário recuperado com sucesso.",
+      message: "Sessão encerrada com sucesso.",
+      data: null,
     });
   } catch (error) {
     if (error instanceof Error) {

@@ -1,3 +1,4 @@
+import { NavigatePages } from "@/components/navigate-pages";
 import { Paginate } from "@/components/paginate";
 import { getRafflesInstances } from "@/services/queries/raffles-instances";
 import { arrayNumberRandom } from "@/utils/tools";
@@ -22,12 +23,26 @@ export function Page() {
     queryFn: () => getRafflesInstances({ query: router.query }),
   });
 
+  const navigationOptions = [
+    {
+      name: "Sorteadores",
+      path: "/raffle-maker",
+      active: false,
+    },
+    {
+      name: "Instâncias de Sorterios",
+      path: "",
+      active: true,
+    },
+  ];
+
   return (
     <div className="flex flex-col w-full items-center">
       <div className="md:w-[70%] flex flex-col gap-4">
         <Heading as="h1" size="xl" mb="5" textAlign="center" color="white">
           Histórico de sorteios
         </Heading>
+        <NavigatePages links={navigationOptions} />
         {rafflesInstances && (
           <Paginate
             current_page={rafflesInstances.data.current_page}

@@ -1,10 +1,11 @@
 import { InputValues } from "@/components/raffle-maker/input-values";
 import { removeDuplicated, sortKeys } from "@/utils/tools";
-import { Button, Card, CardBody } from "@chakra-ui/react";
+import { Button, Card, CardBody, Heading } from "@chakra-ui/react";
 import { Funnel } from "@phosphor-icons/react";
 import { FormEvent, useCallback, useState } from "react";
 import { Timer } from "../timer";
 import { post, FetchError } from "@/services/app";
+import { NavigatePages } from "@/components/navigate-pages";
 
 export function Form() {
   const [keys, setKeys] = useState("");
@@ -74,6 +75,24 @@ export function Form() {
     [keys, setKeysKeySelected, setErrorMessage]
   );
 
+  const navigationOptions = [
+    {
+      name: "Início",
+      path: "/account",
+      active: false,
+    },
+    {
+      name: "Opções de Sorteios",
+      path: "/raffle-maker",
+      active: false,
+    },
+    {
+      name: "Sorteio Simples",
+      path: "",
+      active: true,
+    },
+  ];
+
   return (
     <>
       <Timer
@@ -87,6 +106,19 @@ export function Form() {
           className="flex items-center justify-center flex-col gap-4"
           onSubmit={(event) => handleSort(event)}
         >
+          <div className="md:!w-[70%] w-full">
+            <Heading
+              as="h1"
+              size="xl"
+              mb="5"
+              textAlign="center"
+              color="white"
+              opacity={0.8}
+            >
+              Sorteio Simples
+            </Heading>
+            <NavigatePages links={navigationOptions} />
+          </div>
           <Card
             className="md:!w-[70%] w-full !shadow h-[22.5rem]"
             bg={"secondary.500"}

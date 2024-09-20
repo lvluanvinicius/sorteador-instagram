@@ -3,10 +3,11 @@ import { removeDuplicated, sortKeys } from "@/utils/tools";
 import { Session } from "@prisma/client";
 import { useRouter } from "next/router";
 import { FormEvent, useCallback, useEffect, useState } from "react";
-import { Button, Card, CardBody } from "@chakra-ui/react";
+import { Button, Card, CardBody, Heading } from "@chakra-ui/react";
 import { Timer } from "../../timer";
 import { Funnel } from "@phosphor-icons/react";
 import { InputValues } from "@/components/raffle-maker/input-values";
+import { NavigatePages } from "@/components/navigate-pages";
 
 interface InstagramGamePage {
   session: Session;
@@ -124,6 +125,29 @@ export function Page({ session }: InstagramGamePage) {
     handlerGetComments();
   }, [handlerGetComments]);
 
+  const navigationOptions = [
+    {
+      name: "Início",
+      path: "/account",
+      active: false,
+    },
+    {
+      name: "Opções de Sorteios",
+      path: "/raffle-maker",
+      active: false,
+    },
+    {
+      name: "Posts do Instagram",
+      path: "/raffle-maker/instagram",
+      active: false,
+    },
+    {
+      name: "Sorteio Pelo Instagram",
+      path: "",
+      active: true,
+    },
+  ];
+
   return (
     <>
       <Timer
@@ -137,6 +161,19 @@ export function Page({ session }: InstagramGamePage) {
           className="flex items-center justify-center flex-col gap-4"
           onSubmit={(event) => handleSort(event)}
         >
+          <div className="md:!w-[70%] w-full">
+            <Heading
+              as="h1"
+              size="xl"
+              mb="5"
+              textAlign="center"
+              color="white"
+              opacity={0.8}
+            >
+              Sorteio Pelo Instagram
+            </Heading>
+            <NavigatePages links={navigationOptions} />
+          </div>
           <Card
             className="md:!w-[70%] w-full !shadow h-[22.5rem]"
             bg={"secondary.500"}

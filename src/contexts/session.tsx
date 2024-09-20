@@ -7,8 +7,9 @@ import {
   useState,
 } from "react";
 import nookies from "nookies";
-import { post } from "@/services/app";
+import { FetchError, get, post } from "@/services/app";
 import { useRouter } from "next/router";
+import { toast } from "sonner";
 
 interface SessionContextProps {
   isAuthenticated: boolean;
@@ -50,21 +51,38 @@ export function SessionProvider({ children }: SessionProvider) {
 
   // Efetua o carregamento dos dados de usuários.
   const userLoading = useCallback(async () => {
-    const response = await fetch("/api/user", {
-      headers: {
-        Accept: "application/json",
-      },
-    });
+    try {
+      const response = await get<UserInterface>("/api/user", {
+        headers: {
+          Accept: "application/json",
+        },
+      });
 
-    const data = (await response.json()) as PrismaActionResponse<UserInterface>;
+      if (response.status) {
+        setUser(response.data);
+        setIsAuthenticated(true);
+        return;
+      }
 
-    if (data.data) {
-      setUser(data.data);
-      setIsAuthenticated(true);
-      return;
+      setUser(null);
+      setIsAuthenticated(false);
+    } catch (error) {
+      if (error instanceof FetchError) {
+        if (error.status === 401) {
+          return router.push("/sign-in");
+        }
+
+        return toast.error(error.message);
+      }
+
+      if (error instanceof Error) {
+        return toast.error(error.message);
+      }
+
+      toast.error(
+        "Houve um erro desconhecido ao recuperar o usuário de sessão."
+      );
     }
-
-    setUser(null);
   }, [setUser, setIsAuthenticated]);
 
   const signIn = useCallback(async (username: string, password: string) => {

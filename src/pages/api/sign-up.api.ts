@@ -2,6 +2,7 @@ import { hashMake } from "@/utils/hash";
 import { NextApiRequest, NextApiResponse } from "next";
 import { errorInvalidContentBody } from "../../exceptions/invalid_content_body";
 import { prisma } from "@/lib/prisma";
+import { apiHandlerErros } from "@/exceptions/api_handler_erros";
 
 interface DataRequest {
   username: string | undefined;
@@ -90,35 +91,13 @@ export default async function handle(
     });
   } catch (error) {
     if (error instanceof Error) {
-      switch (error.cause) {
-        case "METHOD_NOT_ALLOWED":
-          return res.status(405).json({
-            status: false,
-            message: error.message,
-          });
-
-        case "INVALID_CONTENT_BODY":
-          return res.status(200).json({
-            status: false,
-            message: error.message,
-          });
-
-        case "DATA_DUPLICATED":
-          return res.status(400).json({
-            status: false,
-            message: error.message,
-          });
-      }
-
-      return res.status(400).json({
-        status: false,
-        message: error.message,
-      });
+      return apiHandlerErros(error, res);
     }
 
     return res.status(400).json({
       status: false,
-      message: "Houve um erro desconhecido.",
+      message: "Erro desconhecido.",
+      data: null,
     });
   } finally {
     await prisma.$disconnect();

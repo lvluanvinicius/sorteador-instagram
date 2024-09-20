@@ -1,3 +1,4 @@
+import { apiHandlerErros } from "@/exceptions/api_handler_erros";
 import { errorInvalidContentBody } from "@/exceptions/invalid_content_body";
 import { prisma } from "@/lib/prisma";
 import { getCookieValueFromRequest } from "@/utils/browser";
@@ -141,28 +142,13 @@ export default async function handler(
     });
   } catch (error) {
     if (error instanceof Error) {
-      switch (error.cause) {
-        case "ERROR_PASS_OR_USER_INCORRECTS":
-          return res.status(401).json({
-            status: false,
-            message: error.message,
-          });
-
-        case "INVALID_CONTENT_BODY":
-          return res.status(200).json({
-            status: false,
-            message: error.message,
-          });
-      }
-
-      return res.status(400).json({
-        status: false,
-        message: error.message,
-      });
+      return apiHandlerErros(error, res);
     }
 
     return res.status(400).json({
-      message: "Houve um erro desconhecido.",
+      status: false,
+      message: "Erro desconhecido.",
+      data: null,
     });
   } finally {
     await prisma.$disconnect();

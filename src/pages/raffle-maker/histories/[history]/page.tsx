@@ -5,20 +5,35 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { Details } from "./details";
 import { arrayNumberRandom } from "@/utils/tools";
+import { NavigatePages } from "@/components/navigate-pages";
 
 interface PageProps {
   instance: RafflesInstancesInterface;
 }
 
 export function Page({ instance }: PageProps) {
-  const router = useRouter();
-
   const { data: raffles } = useQuery({
     queryKey: ["raffles"],
     queryFn: () => getRaffles({ instance: instance.id }),
   });
 
-  console.log(raffles);
+  const navigationOptions = [
+    {
+      name: "Sorteadores",
+      path: "/raffle-maker",
+      active: false,
+    },
+    {
+      name: "Histórico de Sorterios",
+      path: "/raffle-maker/histories",
+      active: false,
+    },
+    {
+      name: `${instance.id}`,
+      path: "/raffle-maker/histories",
+      active: true,
+    },
+  ];
 
   return (
     <div className="flex flex-col w-full items-center">
@@ -26,7 +41,7 @@ export function Page({ instance }: PageProps) {
         <Heading as="h1" size="xl" mb="5" textAlign="center" color="white">
           Detalhes do Sorteio
         </Heading>
-
+        <NavigatePages links={navigationOptions} />
         <Card>
           <CardBody className="flex flex-col gap-2">
             <h1 className="text-xl opacity-80 font-bold">

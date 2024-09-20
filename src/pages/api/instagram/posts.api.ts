@@ -17,7 +17,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     // Recuperando posts. ?fields=id,caption,media_type,media_url,timestamp
     const response = await fetch(
-      `https://graph.facebook.com/v20.0/${req.provider_account_id}/media?limit=100&fields=comments_count,id,media_type,media_url,caption,permalink,timestamp&access_token=${req.provider_token}`,
+      `https://graph.facebook.com/v20.0/${req.provider_account_id}/media?limit=20&fields=comments_count,id,media_type,media_url,caption,permalink,timestamp&access_token=${req.provider_token}`,
       {
         method: "GET",
       }
@@ -40,8 +40,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       cause: "ERROR_FETCH_RETURN",
     });
   } catch (error) {
-    console.log(error);
-
     if (error instanceof Error) {
       return apiHandlerErros(error, res);
     }

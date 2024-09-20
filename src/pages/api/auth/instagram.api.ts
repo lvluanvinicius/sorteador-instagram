@@ -1,3 +1,4 @@
+import { apiHandlerErros } from "@/exceptions/api_handler_erros";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -58,8 +59,14 @@ export default async function handler(
     // Sucesso na troca do token
     return res.status(200).json(data); // Retorna o token de acesso e outros dados
   } catch (error) {
-    // Captura erros de rede ou de solicitação
-    console.error("Erro de rede:", error);
-    return res.status(500).json({ error: "Erro ao processar a solicitação." });
+    if (error instanceof Error) {
+      return apiHandlerErros(error, res);
+    }
+
+    return res.status(400).json({
+      status: false,
+      message: "Erro desconhecido.",
+      data: null,
+    });
   }
 }

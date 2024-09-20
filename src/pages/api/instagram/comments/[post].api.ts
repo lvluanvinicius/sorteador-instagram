@@ -33,9 +33,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       });
     }
 
-    console.log(await response.json());
-
-    throw new Error("errors.me", {
+    throw new Error("Houve um erro ao tentar recuperar os comentários.", {
       cause: "ERROR_FETCH_RETURN",
     });
   } catch (error) {
