@@ -83,7 +83,7 @@ export function SessionProvider({ children }: SessionProvider) {
         "Houve um erro desconhecido ao recuperar o usuário de sessão."
       );
     }
-  }, [setUser, setIsAuthenticated, router]);
+  }, [setUser, setIsAuthenticated]);
 
   const signIn = useCallback(async (username: string, password: string) => {
     const response = await post("/api/sign-in", {
@@ -104,8 +104,6 @@ export function SessionProvider({ children }: SessionProvider) {
   // Valida se o usuário não está logado.
   const notLogged = useCallback(async () => {
     if (!isAuthenticated) {
-      console.log(isAuthenticated, !isAuthenticated, user);
-
       return router.replace("/sign-in");
     }
   }, [router, isAuthenticated, user]);
