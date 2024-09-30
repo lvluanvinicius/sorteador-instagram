@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  marketing:
+    image: docker-registry.grupocednet.com.br/sorteador-instagram:1.0.0
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: any
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+    ports:
+      - target: 3000
+        published: 30006
+        mode: host
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: "mysql://user:pass@host:3306/sorteador"
+      NEXT_PUBLIC_INSTAGRAM_CLIENT_ID: "face-app-id"
+      INSTAGRAM_CLIENT_SECRET: "face-app-key"
+      META_VERIFY_TOKEN: "meta_teste"
+      AUTH_SECRET: "key"
+      NEXT_PUBLIC_APP_URL: "https://sorteador.domain.com.br"
+      TIMEZONE: "America/Sao_Paulo"
+    networks:
+      - marketing
+
+networks:
+  marketing:
+    driver: overlay
