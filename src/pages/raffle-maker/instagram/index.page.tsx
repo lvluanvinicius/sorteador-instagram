@@ -16,7 +16,7 @@ export default function handler({ session }: InstagramPage) {
   return (
     <RaffleMakerLayout>
       <div className="flex flex-col justify-start items-center">
-        <InstagramProvider session={session}>
+        <InstagramProvider>
           <Posts session={session} />
         </InstagramProvider>
       </div>

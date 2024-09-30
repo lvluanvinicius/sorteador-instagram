@@ -1,5 +1,4 @@
 import { FetchError, get } from "@/services/app";
-import { Session } from "@prisma/client";
 import { useRouter } from "next/router";
 import {
   createContext,
@@ -19,12 +18,10 @@ interface InstagramContextProps {
 const InstagramContext = createContext({} as InstagramContextProps);
 
 interface InstagramProviderProps {
-  session: Session | null;
   children: ReactNode;
 }
 
 export default function InstagramProvider({
-  session,
   children,
 }: InstagramProviderProps) {
   const router = useRouter();
