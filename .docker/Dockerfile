@@ -19,9 +19,6 @@ RUN npx prisma generate
 # Gera os arquivos estáticos para produção (Next.js)
 RUN npm run build
 
-# Adicionando apontamento para *.grupocednet.com.br
-RUN echo "191.37.38.41  5106ab8ae68237aa2cb7a0b730d714d6.grupocednet.com.br" >> /etc/hosts
-
 # Remove devDependencies para otimizar a imagem final
 RUN npm prune --production
 

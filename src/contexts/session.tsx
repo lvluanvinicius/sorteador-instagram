@@ -69,7 +69,8 @@ export function SessionProvider({ children }: SessionProvider) {
     } catch (error) {
       if (error instanceof FetchError) {
         if (error.status === 401) {
-          return router.push("/sign-in");
+          setIsAuthenticated(false);
+          return null;
         }
 
         return toast.error(error.message);
@@ -83,7 +84,7 @@ export function SessionProvider({ children }: SessionProvider) {
         "Houve um erro desconhecido ao recuperar o usuário de sessão."
       );
     }
-  }, [router, setUser, setIsAuthenticated]);
+  }, [setUser, setIsAuthenticated]);
 
   const signIn = useCallback(async (username: string, password: string) => {
     const response = await post("/api/sign-in", {
