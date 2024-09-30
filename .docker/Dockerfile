@@ -7,16 +7,19 @@ WORKDIR /app
 # Copia o package.json e o package-lock.json
 COPY package*.json ./
 
-# Instala as dependências
+# Instala as dependências, incluindo as devDependencies para o build do Prisma
 RUN npm install
 
 # Copia o restante do código da aplicação
 COPY . .
 
-# Gera os arquivos estáticos para produção
+# Gera os arquivos do Prisma
+RUN npx prisma generate
+
+# Gera os arquivos estáticos para produção (Next.js)
 RUN npm run build
 
-# Remove devDependencies (opcional)
+# Remove devDependencies para otimizar a imagem final
 RUN npm prune --production
 
 # Cria uma nova imagem para o ambiente de produção
@@ -26,10 +29,11 @@ FROM node:22.2.0 AS production
 WORKDIR /app
 
 # Copia apenas os arquivos necessários do estágio anterior
-COPY --from=builder /app ./
+COPY --from=builder /app ./ 
 
-# Expõe a porta que o Next.js usa
+# Exponha a porta que o Next.js usa
 EXPOSE 3000
+
 
 # Define o comando para iniciar a aplicação
 CMD ["npm", "start"]
